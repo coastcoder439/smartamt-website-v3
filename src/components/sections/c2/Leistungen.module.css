@@ -1,0 +1,89 @@
+/* Bento-Raster der Leistungen (Abschnitt Leistungen).
+
+   Handy: eine Spalte. Ab 768 px zwei Spalten (Websites und KI-Fortbildung über die volle Breite, die
+   beiden kleinen Karten nebeneinander). Ab 1024 px drei Spalten im Verhältnis 1,9 : 1 : 1:
+   Websites links über beide Zeilen, KI-Fortbildung oben rechts über zwei Spalten, darunter die beiden
+   kleinen Karten. */
+
+.bento {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+}
+
+@media (min-width: 768px) {
+    .bento {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .gross,
+    .mittel {
+        grid-column: span 2;
+    }
+}
+
+@media (min-width: 1024px) {
+    .bento {
+        grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr) minmax(0, 1fr);
+        grid-template-rows: auto auto;
+    }
+
+    .gross {
+        grid-column: 1;
+        grid-row: 1 / span 2;
+    }
+
+    .mittel {
+        grid-column: 2 / span 2;
+        grid-row: 1;
+    }
+
+    .klein1 {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .klein2 {
+        grid-column: 3;
+        grid-row: 2;
+    }
+}
+
+/* Foto der KI-Fortbildung: am Handy läuft nur der untere Rand ins Weiß aus, ab 1024 px nur der linke Rand
+   (schmale Maske, das Bild selbst bleibt klar und scharf) */
+.foto {
+    -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+}
+
+@media (min-width: 1024px) {
+    .foto {
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 18%);
+        mask-image: linear-gradient(to right, transparent 0%, #000 18%);
+    }
+}
+
+/* Karten: heben sich beim Überfahren um 2 px, Schatten wird md (CI v3, Bausteine). Die Bewegung der
+   Einblendung (GSAP) entfernt ihre Inline-Werte danach, damit dieser Effekt greift. */
+.karte {
+    position: relative;
+    transition:
+        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.3s ease;
+}
+
+.karte:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Tastaturfokus im Link der Karte: die Karte zeigt denselben Schatten */
+.karte:focus-within {
+    box-shadow: var(--shadow-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .karte:hover {
+        transform: none;
+    }
+}

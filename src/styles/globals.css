@@ -1,0 +1,1207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Gestaltungssystem SmartAmt v3 (docs/brand/brand-identity.md)
+   Hell, freundlich, NX7-Familie: Weiß, Tinte, NX7-Orange als Akzent.
+   ========================================================================== */
+
+:root {
+    /* Die Markenfarbe und die davon getönten Flächen (--brand*, --on-brand, --bg-2, --bg-3, --bg-warm, --line, --line-2,
+       --night) stehen im Block „Markenfarbe: vier Farbvarianten“ gleich unter diesem :root. Orange ist der Standard. */
+
+    /* Text und Flächen */
+    --ink: #0f0f10; /* Überschriften, Haupttext */
+    --ink-2: #4b4b52; /* Fließtext, Kontrast über 8:1 */
+    --ink-3: #6e6e76; /* Nebentext, Kontrast über 4,5:1 */
+    --bg: #ffffff;
+
+    /* Zustände: offen = ruhiges Bernstein, erfüllt = Grün. Rot nur klein für Formularfehler. */
+    --warn: #9a5b00; /* Text auf --warn-50, Kontrast 5:1 */
+    --warn-50: #fff4e5;
+    --warn-dot: #f59e0b;
+    --ok: #15803d;
+    --ok-50: #eef8f1;
+    --ok-hell: #34d399; /* Grün auf dunklen Flächen (Statuspunkte im Fuß) */
+    --bad: #dc2626;
+    --bad-50: #fdeeee;
+
+    /* Schatten: weich, nur für Karten und Ansichten */
+    --shadow-sm: 0 1px 2px rgba(16, 16, 20, 0.06), 0 1px 1px rgba(16, 16, 20, 0.04);
+    --shadow-md: 0 12px 32px -12px rgba(16, 16, 20, 0.18), 0 2px 6px rgba(16, 16, 20, 0.05);
+    --shadow-lg: 0 40px 80px -28px rgba(16, 16, 20, 0.28), 0 8px 20px -8px rgba(16, 16, 20, 0.1);
+
+    /* Gezeichnete Beispielseiten „Musterbach“ (Vorher/Nachher im Abschnitt Websites, b2/MusterbachSeiten.tsx).
+       Das sind die Zeichenfarben der gezeigten Seiten, keine Marken- und keine Zustandsfarben der SmartAmt-Seite:
+       - mb-alt-*: so sieht eine typische alte Gemeinde-Seite aus (Blau, Beige, Laufschrift, Besucherzähler),
+       - mb-*: die neue Seite in den Farben des Gemeindewappens (Grün auf Weiß), Himmel, Hügel, Haus und Kirche. */
+    --mb-alt-grund: #e4e0d2;
+    --mb-alt-text: #5f5f56;
+    --mb-alt-blass: #9b9b90;
+    --mb-alt-blau: #3f5a8a;
+    --mb-alt-blau-hell: #7a93c0;
+    --mb-alt-blau-dunkel: #26385c;
+    --mb-alt-leiste: #cdd5e6;
+    --mb-alt-link: #0a2a9c;
+    --mb-alt-lauf: #fbf1b4;
+    --mb-alt-lauf-text: #7a1414;
+    --mb-alt-wappen: #bfae6f;
+    --mb-alt-zaehler: #121212;
+    --mb-alt-zaehler-text: #46d246;
+
+    --mb-gruen: #1f6b3b;
+    --mb-gruen-dunkel: #164d2a;
+    --mb-gruen-hell: #edf5ef;
+    --mb-gruen-linie: #cfe0d3;
+    --mb-himmel-oben: #8fa7b6;
+    --mb-himmel-mitte: #bdd0cf;
+    --mb-himmel-unten: #e3eadf;
+    --mb-huegel-fern: #9bb98a;
+    --mb-huegel-mitte: #6f9a5c;
+    --mb-huegel-nah: #4a7a43;
+    --mb-huegel-dunkel: #2f5c33;
+    --mb-baum: #2c5a30;
+    --mb-baum-hell: #3d7040;
+    --mb-haus: #e6dac0;
+    --mb-haus-schatten: #cfc1a2;
+    --mb-dach: #7a4a3a;
+    --mb-dach-dunkel: #5e372b;
+    --mb-fenster: #3d5546;
+    --mb-weg: #ece6ca;
+
+    /* Schriften: next/font setzt --font-sans (Inter) und --font-mono (JetBrains Mono) am html-Element. */
+
+    --focus: var(--brand-ink);
+
+    /* Raster: 12 Spalten. Alle Maße in rem: Die Wurzelschrift (html-Regel im Basis-Block weiter unten) wächst ab 1440 px Fensterbreite
+       fließend (siehe Regel für html im Basis-Block: nach Breite und Höhe des Fensters, 14 bis 21 px); damit wachsen Schrift, Abstände,
+       Kopfzeile und Container zusammen. Bei 1440×900 ist 1 rem = 16 px, das Bild bleibt wie vorher.
+       --box     Breite des Containers samt Seitenrand: 1304 px (77,5 rem Inhalt + 2 Ränder) bei 1440 px und darunter;
+                 darüber wächst sie mit dem Fenster und füllt es im selben Verhältnis wie bei 1440 px (90,5 %).
+       --inhalt  reine Inhaltsbreite (ohne Seitenrand): 1240 px bei 1440 px. */
+    --gutter: 1.25rem;
+    --header-h: 4rem;
+    --box: min(100vw, max(calc(77.5rem + 2 * var(--gutter)), 90.5vw));
+    --inhalt: calc(var(--box) - 2 * var(--gutter));
+}
+
+@media (min-width: 768px) {
+    :root {
+        --gutter: 2rem;
+        --header-h: 4.5rem;
+    }
+}
+
+/* Ab Laptop-Breite eine deutlich größere Kopfzeile (Owner 26.10.2026: „Der Header ist viel zu klein“) */
+@media (min-width: 1024px) {
+    :root {
+        --header-h: max(5.5rem, 76px);
+    }
+}
+
+/* ==========================================================================
+   Markenfarbe: vier Farbvarianten (Farbwahl, siehe components/ui/Farbwahl.tsx)
+   Jede Variante liefert denselben Satz Tokens. Gewählt wird mit data-farbe am html-Element (das kleine Skript im
+   Kopf von layout.tsx liest ?farbe=orange|hellblau|violett|gruen aus der Adresse); ohne Angabe oder bei einem
+   unbekannten Wert gilt Orange. Dieselben Blöcke gelten auch für jedes andere Element mit data-farbe: so zeigt
+   ein Farbfleck in der Farbwahl die Farbe seiner Variante, ohne den Wert ein zweites Mal zu nennen.
+   Alle Farbwerte der Marke stehen nur hier; Komponenten verweisen über Tokens (Tailwind: brand, on-brand).
+
+   Der Satz:
+     --brand        Knöpfe, Linien, Punkte, Ringe (nie als Fließtext); Symbole mindestens 3:1 auf Weiß (Orange: siehe unten)
+     --brand-600    Hover der Knöpfe; große Überschriftwörter (ab 24 px, mindestens 3:1)
+     --brand-ink    Markenfarbe als Text auf Weiß und auf den hellen Flächen (mindestens 4,5:1); Fokusring
+     --brand-50/100 zarte Flächen, Ringe, Auswahlfarbe, Lichter
+     --brand-rgb    Kanalwerte für die weichen Lichter der Hero-Bühne
+     --brand-hell   Markenfarbe auf dunklen Flächen (.surface-night), mindestens 4,5:1 auf --night
+     --on-brand     Schrift und Haken auf --brand und --brand-600 (mindestens 4,5:1)
+     --bg-2 …       getönte Flächen und Linien derselben Variante (Text darauf bleibt AA)
+   Die Verhältnisse rechnet scripts/gates/farbwahl-statisch.mjs nach (npm run gates).
+
+   Nicht umgefärbt werden die Bedeutungsfarben (--ok, --warn, --bad), die gezeichneten Musterbach-Seiten (--mb-*)
+   und Fotos. Die Vorschaubilder (og-image, Symbole) bleiben orange.
+   ========================================================================== */
+
+/* Orange (Standard, CI v3: das Orange der NX7.AGENCY). Eine Ausnahme von der 3:1-Regel für Symbole gibt es hier:
+   --brand (#ff6600) erreicht auf Weiß 2,9:1; er steht nur für Linien, Punkte und Ringe und ist mit Text oder
+   Symbol in --brand-ink doppelt gesichert. Auf Orange steht Tintenschrift (6,5:1). */
+:root,
+[data-farbe='orange'] {
+    --brand: #ff6600; /* Knöpfe (mit Tintenschrift), Linien, Markierungen */
+    --brand-600: #e85d04; /* Hover */
+    --brand-ink: #c2410c; /* Orange als Text auf Weiß, Kontrast über 5:1 */
+    --brand-50: #fff5ee;
+    --brand-100: #ffe8d9;
+    --brand-rgb: 255 102 0; /* dieselbe Marke als Kanalwerte, nur für weiche Lichter mit Deckkraft (Hero-Bühne) */
+    --brand-hell: #ff6600; /* auf dunklen Flächen */
+    --on-brand: #0f0f10; /* Tinte auf Orange */
+
+    --bg-2: #f6f6f7; /* ruhige Abschnittsfläche */
+    --bg-3: #eeeef0;
+    --bg-warm: #f8f6f2; /* leicht gewärmtes Hellgrau (Abschnitt Problem) */
+    --line: #e7e7ea;
+    --line-2: #d6d6db;
+    --night: #0a0a0a; /* dunkle Bänder (NX7-Echo): CTA, Fuß */
+}
+
+/* Hellblau: helle Flächen und Lichter in Himmelblau (Farbwinkel um 207°), tieferer Blauton für Knöpfe und Text. */
+[data-farbe='hellblau'] {
+    --brand: #0b74c9;
+    --brand-600: #0a62ab;
+    --brand-ink: #0a5c9f;
+    --brand-50: #eff7fe;
+    --brand-100: #d6eafb;
+    --brand-rgb: 56 160 235;
+    --brand-hell: #6cbcf7;
+    --on-brand: #ffffff;
+
+    --bg-2: #f3f7fb;
+    --bg-3: #e8eff6;
+    --bg-warm: #f3f6fa;
+    --line: #e2e9f1;
+    --line-2: #d0dae6;
+    --night: #0b2a47;
+}
+
+/* Violett: die Farbe von Tobis Seite (smartamt.staging.nx7.agency). Anker der Rampe: Akzent #5b3fd8 (--brand),
+   tief #2d1f86 (--night), hell #bcb0ff (--brand-hell), zart #e7e2ff (--brand-100), Seitengrund #ebe9f3 (--bg-3). */
+[data-farbe='violett'] {
+    --brand: #5b3fd8;
+    --brand-600: #4a2fc0;
+    --brand-ink: #3f2aa6;
+    --brand-50: #f4f1ff;
+    --brand-100: #e7e2ff;
+    --brand-rgb: 91 63 216;
+    --brand-hell: #bcb0ff;
+    --on-brand: #ffffff;
+
+    --bg-2: #f6f5fb;
+    --bg-3: #ebe9f3;
+    --bg-warm: #f6f5fa;
+    --line: #e7e5f0;
+    --line-2: #d6d3e4;
+    --night: #2d1f86;
+}
+
+/* Grün: ruhiges Gemeinde-Grün im Smaragdton (um 161°), bewusst bläulicher als das Zustandsgrün --ok (142°). */
+[data-farbe='gruen'] {
+    --brand: #0e7a57;
+    --brand-600: #0a6648;
+    --brand-ink: #0a5c41;
+    --brand-50: #eef8f3;
+    --brand-100: #d3eee2;
+    --brand-rgb: 16 150 105;
+    --brand-hell: #5fd1a4;
+    --on-brand: #ffffff;
+
+    --bg-2: #f3f7f5;
+    --bg-3: #e8efeb;
+    --bg-warm: #f4f6f2;
+    --line: #e2e9e5;
+    --line-2: #d0dbd5;
+    --night: #0b2b20;
+}
+
+@layer base {
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+    }
+
+    /* Breitbild (ab 1024 px Breite): Die Wurzelschrift folgt der Breite UND der Höhe des Fensters. Breitbildschirme sind
+       breit, aber kaum höher als 1080 px (Browserfenster mit Leisten etwa 1035 px); folgte sie nur der Breite, würde der
+       erste Bildschirm unten abgeschnitten. Breitenanteil: 16 px bis 1440 px, danach +0,0052 px je Pixel; Höhenanteil:
+       16 px bei 900 px Höhe, +0,0178 px je Pixel; es gilt das Kleinere, nie unter 14 px und nie über 21 px.
+       Beispiele: 1440×900 = 16 px, 1920×950 ≈ 16,9 px, 1980×1035 ≈ 18,4 px, 2560×1300 = 21 px, 1440×780 = 14 px. */
+    @media (min-width: 1024px) {
+        html {
+            font-size: clamp(14px, min(max(16px, 16px + (100vw - 1440px) * 0.0052), 16px + (100vh - 900px) * 0.0178), 21px);
+        }
+    }
+
+    body {
+        @apply bg-white font-sans text-body antialiased;
+        color: var(--ink-2);
+        overflow-x: clip;
+        font-feature-settings: 'cv11', 'ss01';
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-sans;
+        color: var(--ink);
+        text-wrap: balance;
+    }
+
+    h1 {
+        @apply text-h1;
+    }
+
+    h2 {
+        @apply text-h2;
+    }
+
+    h3 {
+        @apply text-h3;
+    }
+
+    p,
+    li,
+    dd,
+    figcaption {
+        text-wrap: pretty;
+    }
+
+    ::selection {
+        background: var(--brand-100);
+        color: var(--ink);
+    }
+
+    :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+        outline: 3px solid var(--focus);
+        outline-offset: 2px;
+        border-radius: 6px;
+    }
+
+    [tabindex='-1']:focus {
+        outline: none;
+    }
+
+    [id] {
+        scroll-margin-top: calc(var(--header-h) + 8px);
+    }
+}
+
+@layer components {
+    /* ---- Raster ---------------------------------------------------------- */
+    .wrap {
+        width: 100%;
+        max-width: var(--box);
+        margin-inline: auto;
+        padding-inline: var(--gutter);
+    }
+
+    .grid-12 {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        column-gap: var(--gutter);
+    }
+
+    /* v3: kleinere Abschnittsabstände (v2: clamp(5rem, 10vw, 9rem)). Owner 27.10.2026: „Da sind noch so viele leere Flächen“;
+       gemessen bei 1440 px: bis 263 px leer zwischen zwei Abschnitten, jetzt rund 140 px. */
+    .section {
+        padding-block: clamp(3rem, 5vw, 4.5rem);
+    }
+
+    /* ---- Flächen --------------------------------------------------------- */
+    .surface-dark,
+    .surface-night {
+        background: var(--night);
+        color: #c9c9cf;
+        --focus: var(--brand-hell);
+    }
+
+    .surface-dark :is(h1, h2, h3, h4),
+    .surface-night :is(h1, h2, h3, h4) {
+        color: #fafafa;
+    }
+
+    .surface-soft {
+        background: var(--bg-2);
+    }
+
+    /* Punktraster: Hero und einzelne Bühnen */
+    .dot-grid {
+        background-image: radial-gradient(circle at 1px 1px, var(--line-2) 1px, transparent 0);
+        background-size: 24px 24px;
+    }
+
+    /* ---- Label (Eyebrow): JetBrains Mono, Versalien, mit „//“ wie bei NX7 -- */
+    .label {
+        @apply font-mono text-label font-medium uppercase;
+        color: var(--brand-ink);
+    }
+
+    .label {
+        text-wrap: balance;
+    }
+
+    .label::before {
+        content: '// ' / '';
+        color: var(--brand);
+    }
+
+    /* Am Handy bricht das lange Label in zwei ruhige Zeilen: engere Laufweite, mehr Zeilenhöhe */
+    @media (max-width: 639px) {
+        .label {
+            letter-spacing: 0.1em;
+            line-height: 1.65;
+        }
+    }
+
+    .surface-dark .label,
+    .surface-night .label {
+        color: var(--brand-hell);
+    }
+
+    /* ---- Logo: Signalpunkt + „Smart“ in Tinte + „Amt“ in der Markenfarbe ----------
+           --logo-akzent ist die einzige Farbe der Marke im Logo (Punkt, „Amt“, Ring). Ein künftiges Zeichen als SVG
+           nimmt fill/stroke: var(--logo-akzent) oder currentColor und folgt damit der Farbwahl. ---- */
+    .logo {
+        --logo-akzent: var(--brand);
+        --logo-ring: var(--brand-100);
+        display: inline-flex;
+        align-items: center;
+        color: var(--ink);
+        text-decoration: none;
+    }
+
+    .logo-mark {
+        --logo-h: 1.875rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.62em;
+        height: var(--logo-h);
+        font-family: var(--font-sans), system-ui, sans-serif;
+        font-size: calc(var(--logo-h) * 0.72);
+        font-weight: 800;
+        letter-spacing: -0.045em;
+        line-height: 1;
+        white-space: nowrap;
+        color: inherit;
+    }
+
+    /* Signalpunkt: voller Punkt mit weichem Ring, wie das Statuslicht eines Geräts */
+    .logo-mark::before {
+        content: '';
+        width: 0.46em;
+        height: 0.46em;
+        margin-left: 0.2em;
+        border-radius: 50%;
+        background: var(--logo-akzent);
+        box-shadow: 0 0 0 0.2em var(--logo-ring);
+        flex: none;
+    }
+
+    .logo-amt {
+        color: var(--logo-akzent);
+    }
+
+    /* Logo in der Kopfzeile: größer als im Fließtext (Owner 26.10.2026: „Der Header ist viel zu klein“); rem, damit es mitwächst.
+       !important, weil Logo.tsx die Größe inline setzt und das Logo selbst unberührt bleibt. */
+    .kopf-logo :is(.logo-mark, .logo-bild) {
+        --logo-h: 2.25rem !important;
+    }
+
+    /* Handy (unter 640 px): etwas kleiner, damit Logo und „Schließen“ ab 360 px Breite nebeneinander passen */
+    @media (max-width: 639px) {
+        .kopf-logo :is(.logo-mark, .logo-bild) {
+            --logo-h: 1.875rem !important;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .kopf-logo :is(.logo-mark, .logo-bild) {
+            --logo-h: 2.375rem !important;
+        }
+    }
+
+    @media (min-width: 1280px) {
+        .kopf-logo :is(.logo-mark, .logo-bild) {
+            --logo-h: 2.75rem !important;
+        }
+    }
+
+    /* Logo im Fuß: mitwachsend (rem) statt fester 30 px */
+    .fuss-logo :is(.logo-mark, .logo-bild) {
+        --logo-h: 2.125rem !important;
+    }
+
+    .surface-dark .logo,
+    .surface-night .logo {
+        --logo-akzent: var(--brand-hell);
+        --logo-ring: color-mix(in srgb, var(--brand-hell) 24%, transparent);
+        color: #fafafa;
+    }
+
+    /* ---- Logo-Wahl (Werkzeug wie die Farbwahl): Zeichen + Wortmarke mit Dach-A ----------------------------------
+           Sichtbar ist nur die Fassung, die data-logo am html-Element nennt (Regeln in LogoSprite.tsx). Farben nur über
+           Variablen: Akzent und Tinte folgen Farbwahl und Fläche; Schwarz-Rot-Gold ist fest (Flagge, von oben nach unten);
+           die helle Kachel (lz-bg) trägt die Flaggenfarben auf dunklem Grund. ---- */
+    .logo {
+        --logo-tinte: var(--ink);
+        --logo-auf: var(--on-brand);
+        --logo-grund: #fff;
+    }
+
+    .surface-dark .logo,
+    .surface-night .logo {
+        --logo-tinte: #fafafa;
+        --logo-auf: var(--night);
+    }
+
+    .logo-bild {
+        --logo-h: 1.875rem;
+        display: none;
+        align-items: center;
+        gap: calc(var(--logo-h) * 0.3);
+        height: calc(var(--logo-h) * 1.3);
+    }
+
+    .logo-bild-zeichen {
+        height: 100%;
+        width: auto;
+        aspect-ratio: 1;
+        flex: none;
+        overflow: visible;
+    }
+
+    .logo-bild-wort {
+        height: calc(var(--logo-h) * 0.64);
+        width: auto;
+        aspect-ratio: 213.53 / 36.01;
+        flex: none;
+    }
+
+    .lz-a { fill: var(--logo-akzent, currentColor); }
+    .lz-t { fill: var(--logo-tinte, currentColor); }
+    .lz-auf { fill: var(--logo-auf, #fff); }
+    .lz-g { fill-opacity: 0.62; }
+    .lz-s { fill: none; stroke: var(--logo-akzent, currentColor); }
+    .lz-st { fill: none; stroke: var(--logo-tinte, currentColor); }
+    .lz-sa { fill: none; stroke: var(--logo-auf, #fff); }
+    .lz-bg { fill: var(--logo-grund, #fff); }
+    .lz-de-s { fill: #0f0f10; }
+    .lz-de-r { fill: #dd0000; }
+    .lz-de-g { fill: #f0b800; }
+    .lz-de-ss { fill: none; stroke: #0f0f10; }
+    .lz-de-sr { fill: none; stroke: #dd0000; }
+    .lz-de-sg { fill: none; stroke: #f0b800; }
+
+    /* ---- Knöpfe --------------------------------------------------------- */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.55em;
+        min-height: 3.125rem;
+        padding: 0 1.5rem;
+        border: 1px solid transparent;
+        border-radius: 0.75rem;
+        font-family: var(--font-sans), system-ui, sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        line-height: 1.2;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition:
+            background-color 0.2s ease,
+            color 0.2s ease,
+            border-color 0.2s ease,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Pfeil im Knopf rückt beim Überfahren ein Stück vor */
+    .btn .pfeil {
+        display: inline-block;
+        transition: transform 0.25s ease;
+    }
+
+    .btn:hover .pfeil {
+        transform: translateX(3px);
+    }
+
+    /* Handy (unter 480 px): etwas schmaler, damit „Kostenlose Vorschau anfragen →“ auch in einer Karte in einer Zeile steht */
+    @media (max-width: 479px) {
+        .btn {
+            padding: 0 1.125rem;
+            font-size: 0.9375rem;
+        }
+    }
+
+    .btn-klein {
+        min-height: 2.625rem;
+        padding: 0 1.125rem;
+        font-size: 0.9375rem;
+    }
+
+    /* Hauptknopf in der Kopfzeile (ab 1024 px): deutlich größer als ein kleiner Knopf; zwischen 1024 und 1279 px etwas
+       kompakter, damit Logo, Menü und Knopf in einer Zeile bleiben */
+    .btn-kopf {
+        min-height: 3rem;
+        padding: 0 1.25rem;
+        font-size: 1rem;
+        white-space: nowrap;
+    }
+
+    @media (min-width: 1280px) {
+        .btn-kopf {
+            min-height: 3.25rem;
+            padding: 0 1.75rem;
+            font-size: 1.0625rem;
+        }
+    }
+
+    /* Hauptknopf: Schrift in --on-brand (Orange: Tinte, die anderen Farben: Weiß; je Variante mindestens 4,5:1) */
+    .btn-primary {
+        background: var(--brand);
+        color: var(--on-brand);
+        box-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.35) inset,
+            0 8px 20px -8px color-mix(in srgb, var(--brand) 55%, transparent);
+    }
+
+    .btn-primary:hover {
+        background: var(--brand-600);
+        color: var(--on-brand);
+    }
+
+    .btn-secondary {
+        background: var(--bg);
+        color: var(--ink);
+        border-color: var(--line-2);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover {
+        border-color: var(--ink-3);
+    }
+
+    .surface-dark .btn-secondary,
+    .surface-night .btn-secondary {
+        background: transparent;
+        color: #fafafa;
+        border-color: rgba(255, 255, 255, 0.24);
+        box-shadow: none;
+    }
+
+    /* ---- Links im Fließtext ------------------------------------------------ */
+    .link {
+        color: var(--ink);
+        text-decoration: underline;
+        text-decoration-color: var(--brand);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 0.22em;
+    }
+
+    .link:hover {
+        text-decoration-thickness: 2.5px;
+    }
+
+    /* ---- Karten ----------------------------------------------------------- */
+    .karte {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: 1rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    /* ---- Status-Chips: offen = Bernstein, erfüllt = Grün ------------------- */
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5em;
+        padding: 0.3em 0.8em;
+        border-radius: 999px;
+        font-family: var(--font-sans), system-ui, sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+
+    .chip-warn {
+        color: var(--warn);
+        background: var(--warn-50);
+    }
+
+    .chip-ok {
+        color: var(--ok);
+        background: var(--ok-50);
+    }
+
+    /* ---- Navigation: Linie fährt unter dem Punkt ein ----------------------- */
+    .nav-link {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        padding: 0.625rem 0.625rem;
+        border-radius: 0.625rem;
+        white-space: nowrap;
+        color: var(--ink-2);
+        font-size: clamp(0.9375rem, 0.55rem + 0.55vw, 1.0625rem);
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0.625rem;
+        right: 0.625rem;
+        bottom: 0.125rem;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--brand);
+        transform: scaleX(0);
+        transform-origin: left center;
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (min-width: 1280px) {
+        .nav-link {
+            padding-inline: 0.875rem;
+        }
+
+        .nav-link::after {
+            left: 0.875rem;
+            right: 0.875rem;
+        }
+    }
+
+    .nav-link:hover,
+    .nav-link[aria-current='location'],
+    .nav-link[aria-current='page'] {
+        color: var(--ink);
+    }
+
+    .nav-link:hover::after,
+    .nav-link[aria-current='location']::after,
+    .nav-link[aria-current='page']::after {
+        transform: scaleX(1);
+    }
+
+    /* ---- Links im Fuß (hell): Tinte-2, beim Überfahren Tinte mit oranger Linie.
+           Tippfläche: 32 px hoch am Zeiger, 44 px am Finger und auf schmalen Bildschirmen. ---- */
+    .fuss-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2rem;
+        color: var(--ink-2);
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 0.22em;
+        transition:
+            color 0.2s ease,
+            text-decoration-color 0.2s ease;
+    }
+
+    .fuss-link:hover {
+        color: var(--ink);
+        text-decoration-color: var(--brand);
+    }
+
+    @media (max-width: 767px), (pointer: coarse) {
+        .fuss-link {
+            min-height: 44px;
+        }
+    }
+
+    /* ---- Schwebender Anrufknopf (nur Handy): erscheint erst, wenn der Hero den Bildschirm verlassen hat ---- */
+    .anruf-knopf {
+        transition:
+            opacity 0.3s ease,
+            transform 0.3s ease,
+            visibility 0.3s,
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+
+    /* ---- Formularfelder ---------------------------------------------------- */
+    .feld {
+        width: 100%;
+        min-height: 3.125rem;
+        padding: 0.75rem 0.875rem;
+        background: var(--bg);
+        border: 1px solid var(--line-2);
+        border-radius: 0.75rem;
+        color: var(--ink);
+        font-family: var(--font-sans), system-ui, sans-serif;
+        font-size: 1rem;
+        line-height: 1.4;
+        transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .feld:hover {
+        border-color: var(--ink-3);
+    }
+
+    /* Fokus am Feld: klarer Rahmen in Orange-Text-Farbe plus weicher Hof */
+    .feld:focus-visible {
+        outline: 2px solid var(--brand-ink);
+        outline-offset: 0;
+        border-color: var(--brand-ink);
+        box-shadow: 0 0 0 6px var(--brand-100);
+    }
+
+    .feld::placeholder {
+        color: var(--ink-3);
+        opacity: 1;
+    }
+
+    /* ---- Sprunglink ------------------------------------------------------- */
+    .skip-link {
+        position: absolute;
+        left: var(--gutter);
+        top: -120px;
+        z-index: 100;
+        padding: 0.75rem 1.25rem;
+        background: var(--brand);
+        color: var(--on-brand);
+        border-radius: 0.75rem;
+        font-weight: 600;
+    }
+
+    .skip-link:focus {
+        top: 12px;
+    }
+
+    /* ---- Rechtstexte ------------------------------------------------------- */
+    .legal h2 {
+        @apply font-sans text-h3;
+        margin-top: 2.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .legal h3 {
+        margin-top: 2rem;
+        margin-bottom: 0.35rem;
+        font-size: 1.125rem;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--ink);
+    }
+
+    .legal p,
+    .legal ul,
+    .legal ol,
+    .legal address {
+        margin-top: 0.9em;
+        max-width: 72ch;
+    }
+
+    .legal address {
+        font-style: normal;
+    }
+
+    .legal ul {
+        list-style: disc;
+        padding-left: 1.25rem;
+    }
+
+    .legal ol {
+        list-style: decimal;
+        padding-left: 1.25rem;
+    }
+
+    .legal li + li {
+        margin-top: 0.4em;
+    }
+
+    .legal a {
+        color: var(--ink);
+        text-decoration: underline;
+        text-decoration-color: var(--brand);
+        text-decoration-thickness: 1.5px;
+        text-underline-offset: 0.2em;
+    }
+}
+
+/* ==========================================================================
+   Reveal: Zeilenmasken
+   Die Maske schneidet überstehende Zeilen ab. Damit Unterlängen (g, p, y) und
+   Umlaute nicht mit abgeschnitten werden, wächst die Schnittfläche nach unten
+   und oben, ohne das Layout zu verschieben.
+   ========================================================================== */
+
+.reveal-line-mask,
+.zeile {
+    padding-block: 0.08em 0.18em;
+    margin-block: -0.08em -0.18em;
+}
+
+/* Zeile des Hero-Titels: feste Maske, Inhalt fährt von unten herein. */
+.zeile {
+    display: block;
+    overflow: hidden;
+    /* Überstände nach links und rechts (Serifen, Laufweite) nicht abschneiden */
+    padding-inline: 0.04em;
+    margin-inline: -0.04em;
+}
+
+.zeile > span {
+    display: block;
+}
+
+/* ==========================================================================
+   Hero-Ladeanimation: Text, Knöpfe, Vertrauenszeile und Produktansicht sind vor dem Start versteckt,
+   aber nur, wenn JavaScript läuft und keine reduzierte Bewegung gewünscht ist (html.js, html.rm setzt
+   das kleine Skript im Kopf von layout.tsx). Fällt das Skript aus oder kommt es spät, zeigt die
+   Rückfall-Animation nach 1,8 s alles an. Ohne JavaScript ist nie etwas versteckt.
+   Die Überschrift ist davon ausgenommen: Sie fährt rein per CSS aus ihrer Maske (siehe .hero-h1) und
+   steht damit schon beim ersten Bild, ohne auf die Hydrierung zu warten (größtes Element der Seite).
+   ========================================================================== */
+
+html.js:not(.rm) [data-intro] {
+    visibility: hidden;
+    animation: intro-rueckfall 0s linear 1.8s forwards;
+}
+
+@keyframes intro-rueckfall {
+    to {
+        visibility: visible;
+    }
+}
+
+/* Anrufknopf (Handy): Mit JavaScript bleibt er versteckt, bis Header.tsx ihn freigibt (data-sichtbar);
+   ohne JavaScript steht er von Anfang an da. */
+html.js .anruf-knopf:not([data-sichtbar='true']) {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(12px);
+}
+
+/* ==========================================================================
+   Hero-Überschrift: „Ortseingangsschild.“ steht auf jeder Breite vollständig in einer Zeile und füllt die
+   Inhaltsbreite (am Handy ohne Wortbruch, wie bei NX7 und Leon). Das Wort ist gemessen 8,93 em breit
+   (Inter 700, Laufweite −0,05 em); die Schriftgröße folgt der Inhaltsbreite (--inhalt) durch 9,5, das lässt 6 % Luft,
+   damit die Zeilenmaske nie etwas abschneidet. Höchstens 7,5 rem (120 px bei 16 px Wurzelschrift), mindestens 28 px. Der weiche Trennstrich
+   (&shy; im Text) greift nur noch auf Fenstern unter 300 px als Notausgang.
+   ========================================================================== */
+
+.hero-h1 {
+    font-size: clamp(1.75rem, calc(var(--inhalt) / 9.5), 7.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.05em;
+    font-weight: 700;
+    hyphens: manual;
+}
+
+/* ==========================================================================
+   Hero-Bühne (hell): Tiefe aus drei weichen Lichtern, Punktraster und feinen Rasterlinien; alles Zierde,
+   hinter dem Inhalt. Die Lichter sind Farbverläufe (kein Filter, keine Fläche) und driften beim Scrollen
+   per transform (Hero.tsx); am Desktop folgen sie zusätzlich leicht dem Zeiger. Spitzenwert des Orange:
+   20 % Deckkraft, nach außen auf 0.
+   ========================================================================== */
+
+.hero-buehne {
+    position: absolute;
+    inset: 0;
+    z-index: -10;
+    overflow: hidden;
+    pointer-events: none;
+    /* Der Unterrand blendet aus: kein harter Absatz zum nächsten Abschnitt, auch wenn die Lichter nach oben driften */
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - clamp(7.5rem, 22vh, 13.75rem)), transparent);
+    mask-image: linear-gradient(to bottom, black calc(100% - clamp(7.5rem, 22vh, 13.75rem)), transparent);
+}
+
+/* v3 (EINZELNES.punktraster = false, Klasse am <html>): alle Punktraster aus, nur das im Hero der Startseite bleibt, gedämpft.
+   Owner 27.10.2026: „aber nicht überall diese gepunkteten Hintergründe. Das gefällt mir nicht. Das sieht sehr nach KI aus.“ */
+.punkte-aus .dot-grid {
+    background-image: none !important;
+}
+
+.punkte-aus .hero-dots {
+    opacity: 0.45;
+}
+
+/* Punktraster: deutlicher als .dot-grid, mittig stark, zu den Rändern ausblendend */
+.hero-dots {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--ink-3) 42%, white) 1.1px, transparent 0);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(78% 68% at 64% 46%, black 15%, transparent);
+    mask-image: radial-gradient(78% 68% at 64% 46%, black 15%, transparent);
+}
+
+.hero-glow {
+    position: absolute;
+    will-change: transform;
+}
+
+.hero-glow > div {
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+}
+
+/* A: großes warmes Licht hinter der Produktansicht */
+.hero-glow-a {
+    right: -14%;
+    top: 14%;
+    width: clamp(35rem, 78vw, 74rem);
+    aspect-ratio: 1.25;
+}
+
+.hero-glow-a > div {
+    background: radial-gradient(closest-side, rgb(var(--brand-rgb) / 0.2), rgb(var(--brand-rgb) / 0.08) 55%, rgb(var(--brand-rgb) / 0));
+}
+
+/* B: kleineres Licht links unten, hinter Text und Knöpfen */
+.hero-glow-b {
+    left: -16%;
+    bottom: -22%;
+    width: clamp(26rem, 56vw, 54rem);
+    aspect-ratio: 1;
+}
+
+.hero-glow-b > div {
+    background: radial-gradient(closest-side, rgb(var(--brand-rgb) / 0.11), rgb(var(--brand-rgb) / 0.04) 60%, rgb(var(--brand-rgb) / 0));
+}
+
+/* C: schräger Lichtstreif von oben rechts (wie der Lichtkegel bei Leon, hier warm auf Weiß): lange, schmale Ellipse */
+.hero-glow-c {
+    right: 4%;
+    top: -34%;
+    width: 40%;
+    height: 150%;
+    rotate: 24deg;
+}
+
+.hero-glow-c > div {
+    background: radial-gradient(closest-side, rgb(var(--brand-rgb) / 0.12), rgb(var(--brand-rgb) / 0.04) 60%, rgb(var(--brand-rgb) / 0));
+    -webkit-mask-image: linear-gradient(to bottom, black 30%, transparent 85%);
+    mask-image: linear-gradient(to bottom, black 30%, transparent 85%);
+}
+
+/* Die Lichter blühen beim ersten Bild auf (nur opacity; ohne JavaScript und bei reduzierter Bewegung stehen sie sofort da) */
+html.js:not(.rm) .hero-glow {
+    animation: glow-ein 1.8s ease-out both;
+}
+
+@keyframes glow-ein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Feine Rasterlinien an den Rändern der Inhaltsbreite (ab 1024 px), oben und unten ausblendend */
+.hero-gitter {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .hero-gitter {
+        display: block;
+        position: absolute;
+        inset: 0;
+    }
+
+    .hero-gitter > i {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, var(--line-2) 24%, var(--line-2) 62%, transparent);
+        opacity: 0.8;
+    }
+
+    .hero-gitter > i:nth-child(1) {
+        left: calc(max(var(--gutter), (100% - var(--inhalt)) / 2) - 1rem);
+    }
+
+    .hero-gitter > i:nth-child(2) {
+        right: calc(max(var(--gutter), (100% - var(--inhalt)) / 2) - 1rem);
+    }
+}
+
+/* Die Zeilen fahren beim ersten Bild aus ihrer Maske (nur mit JavaScript-Kennung und ohne reduzierte
+   Bewegung; sonst steht die Überschrift sofort da). Reines CSS, kein Warten auf die Hydrierung. */
+html.js:not(.rm) .hero-h1 .zeile > span {
+    animation: zeile-ein 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+}
+
+html.js:not(.rm) .hero-h1 .zeile:nth-child(2) > span {
+    animation-delay: 0.16s;
+}
+
+@keyframes zeile-ein {
+    from {
+        transform: translateY(105%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Fuß: große Zierwortmarke, die die Inhaltsbreite bündig füllt. Gemessen (Canvas, Inter 800, Laufweite
+   −0,06 em): „SmartAmt“ ist als Tinte 4,619 em breit und beginnt 0,031 em rechts vom Ursprung. Die
+   Schriftgröße folgt darum der Breite der Hülle (Container-Einheit cqw, unabhängig von der Breite des
+   Bildlauf-Balkens): 100 cqw / 4,62; ein Rückzug von 0,031 em schiebt die Tinte an die linke Kante.
+   Die Maske schneidet die Marke beim Einfahren ab (wie die Zeilen im Hero); ihr Innenabstand gibt
+   Überständen oben und unten Luft, ihr Außenabstand hebt ihn wieder auf.
+   ========================================================================== */
+
+.fuss-marke-huelle {
+    container-type: inline-size;
+}
+
+.fuss-marke-maske {
+    font-size: calc(100cqw / 4.62);
+    overflow: hidden;
+    padding: 0.05em 0.03em 0.07em;
+    margin: -0.05em -0.03em -0.07em;
+}
+
+.fuss-marke {
+    display: block;
+    margin-left: -0.031em;
+    font-weight: 800;
+    line-height: 0.84;
+    letter-spacing: -0.06em;
+    white-space: nowrap;
+    user-select: none;
+}
+
+/* Handy: Die Marke steht gestapelt („Smart“ über „Amt“) und füllt die Breite mit „Smart“ (Tinte gemessen
+   2,717 em breit): rund 128 px Schriftgröße statt 76 px in einer Zeile, damit sie als Abschluss trägt. */
+@media (max-width: 639px) {
+    .fuss-marke-maske {
+        font-size: calc(100cqw / 2.73);
+    }
+
+    .fuss-marke > span {
+        display: block;
+    }
+}
+
+/* Der letzte Abschnitt vor dem Fuß (Kontakt) lässt unten weniger Luft: höchstens 80 px bis zur Fußlinie. */
+#kontakt.section {
+    padding-bottom: clamp(3.5rem, 7vw, 5rem);
+}
+
+/* Menüfeld auf dem Handy: ruhiges Einblenden, Einträge folgen nacheinander */
+@keyframes panel-ein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes menue-eintrag {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Farbwahl (Werkzeug für Tobi und zum Vergleichen, components/ui/Farbwahl.tsx; Schalter EINZELNES.farbwahl)
+   Kleiner runder Schalter unten links mit einem Feld, das über dem Schalter aufklappt. Es liegt über dem Inhalt
+   (z-40), aber unter der Kopfzeile samt geöffnetem Menü (z-50). Bewegung nur mit transform und opacity, und nur
+   ohne reduzierte Bewegung. Das Feld bleibt im Dokument (visibility), damit es ruhig aus- und eingeblendet wird.
+   ========================================================================== */
+
+/* Farbfleck einer Variante: das Element trägt data-farbe und bekommt damit die Tokens seiner Variante (siehe oben) */
+.farbfleck {
+    display: block;
+    flex: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-100);
+}
+
+.farbwahl {
+    transition: opacity 0.25s ease;
+}
+
+/* Auf schmalen Fenstern weicht der Schalter aus, solange Kontakt oder Fuß im Bild sind (Formular und Fuß bleiben frei) */
+.farbwahl[data-verdeckt='true'] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 0.25s ease,
+        visibility 0s linear 0.25s;
+}
+
+/* Solange das Menü der Kopfzeile offen ist, liegt es über dem Schalter; für Hilfstechnik ist er dann auch nicht erreichbar */
+body:has(header[data-offen='true']) .farbwahl {
+    visibility: hidden;
+}
+
+.farbwahl-panel {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 12px);
+    /* Breiter und mit eigener Bildlaufleiste, seit die Logo-Wahl im selben Feld steht */
+    width: min(22rem, calc(100vw - 2rem));
+    max-height: calc(100dvh - 6rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(8px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0s linear 0.2s;
+}
+
+.farbwahl-panel[data-offen='true'] {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .farbwahl,
+    .farbwahl[data-verdeckt='true'],
+    .farbwahl-panel {
+        transition: none !important;
+    }
+
+    .farbwahl-panel {
+        transform: none;
+    }
+}
+
+/* ==========================================================================
+   Reduzierte Bewegung: keine Übergänge, keine Scroll-Kopplung
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

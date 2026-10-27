@@ -1,0 +1,316 @@
+/* Befund-Liste unter dem Vorher/Nachher (Befunde.tsx), CI v3: weiße Karte, Bernstein für offen, Grün für erfüllt, die dünne
+   Linie unter der Kopfzeile in der Markenfarbe. Farben nur über Tokens (die Bedeutungsfarben --warn und --ok folgen der
+   Farbwahl nicht, die Marke schon).
+
+   Zwei Anordnungen aus demselben Markup:
+   - ab 768 px eine Tabelle aus vier Spalten (Zeichen, Befund, Vorher, Nachher) mit Spaltenkopf;
+   - darunter stehen Vorher und Nachher unter dem Befund, mit kleiner Vorsilbe „Vorher:“ und „Nachher:“.
+   Der Endzustand (data-state="ok") ist das Server-HTML; „offen“ setzt erst der Scroll. */
+
+.karte {
+    padding: 22px 20px 20px;
+    border-radius: 20px;
+}
+
+@media (min-width: 768px) {
+    .karte {
+        padding: 30px 36px 28px;
+    }
+}
+
+/* ---- Kopf: Titel links, Zähler rechts --------------------------------------------- */
+
+.kopf {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 14px 24px;
+}
+
+.titel {
+    margin: 0;
+}
+
+.zaehler {
+    margin: 0;
+}
+
+.zaehlerSicht {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.zahl {
+    display: inline-block;
+    min-width: 0.6em;
+    color: var(--warn);
+    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-align: right;
+    animation: zahlWechsel 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.zaehler[data-fertig='true'] .zahl {
+    color: var(--ok);
+}
+
+@keyframes zahlWechsel {
+    from {
+        opacity: 0;
+        transform: translateY(40%);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.zaehlerText {
+    color: var(--ink-2);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+/* ---- Fortschrittslinie ---------------------------------------------------------------- */
+
+.spur {
+    position: relative;
+    height: 2px;
+    margin-top: 18px;
+    overflow: hidden;
+    background: var(--line);
+    border-radius: 99px;
+}
+
+.fuell {
+    position: absolute;
+    inset: 0;
+    background: var(--brand);
+    border-radius: 99px;
+    transform-origin: left center;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- Spaltenkopf und Zeilen ------------------------------------------------------------ */
+
+.spaltenKopf {
+    display: none;
+}
+
+.liste {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.zeile {
+    border-top: 1px solid var(--line);
+}
+
+.zeile:first-child {
+    border-top: 0;
+}
+
+.zeileInnen {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    column-gap: 14px;
+    row-gap: 2px;
+    align-items: start;
+    padding-block: 16px;
+}
+
+.befund {
+    grid-column: 2;
+    margin: 0;
+    color: var(--ink);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+}
+
+.vorher,
+.nachher {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    transition: color 0.35s ease;
+}
+
+.zellenLabel {
+    color: var(--ink-3);
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+/* Vorher: offen in Bernstein, erfüllt gedämpft (bleibt lesbar) */
+.vorher {
+    color: var(--warn);
+    font-weight: 500;
+}
+
+/* Nachher: offen in Tinte-3 (lesbar, 4,5:1), erfüllt in Grün */
+.nachher {
+    color: var(--ink-3);
+    font-weight: 600;
+}
+
+.zeile[data-state='ok'] .vorher {
+    color: var(--ink-3);
+    font-weight: 400;
+}
+
+.zeile[data-state='ok'] .nachher {
+    color: var(--ok);
+}
+
+.zeile[data-state='ok'] .zellenLabel {
+    color: inherit;
+}
+
+/* ---- Zeichen: Bernstein-Punkt (offen) oder grüner Haken (erfüllt) ----------------------- */
+
+.status {
+    position: relative;
+    display: block;
+    width: 28px;
+    height: 28px;
+    margin-top: -1px;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    transition:
+        background-color 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.statusPunkt,
+.statusHaken {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transition:
+        opacity 0.3s ease,
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.statusPunkt {
+    width: 9px;
+    height: 9px;
+    margin: -4.5px 0 0 -4.5px;
+    background: var(--warn-dot);
+    border-radius: 50%;
+}
+
+.statusHaken {
+    width: 18px;
+    height: 18px;
+    margin: -9px 0 0 -9px;
+    color: var(--ok);
+}
+
+.statusHaken path {
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+
+.zeile[data-state='offen'] .status {
+    background: var(--warn-50);
+    border-color: color-mix(in srgb, var(--warn-dot) 40%, var(--bg));
+}
+
+.zeile[data-state='offen'] .statusHaken {
+    opacity: 0;
+    transform: scale(0.6);
+}
+
+.zeile[data-state='ok'] .status {
+    background: var(--ok-50);
+    border-color: color-mix(in srgb, var(--ok) 25%, var(--bg));
+}
+
+.zeile[data-state='ok'] .statusPunkt {
+    opacity: 0;
+    transform: scale(0.4);
+}
+
+.zeile[data-state='ok'] .statusHaken path {
+    stroke-dashoffset: 0;
+}
+
+/* ---- Fuß: Aussage von Tobi und Hinweis „erfunden“ -------------------------------------- */
+
+.pflicht {
+    margin: 4px 0 0;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-2);
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.hinweis {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 0;
+    color: var(--ink-2);
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+/* ---- Tabelle ab 768 px ------------------------------------------------------------------- */
+
+@media (min-width: 768px) {
+    .spaltenKopf,
+    .zeileInnen {
+        grid-template-columns: 30px minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+        column-gap: 24px;
+    }
+
+    .spaltenKopf {
+        display: grid;
+        padding: 22px 0 10px;
+        color: var(--ink-3);
+        font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.14em;
+        line-height: 1.2;
+        text-transform: uppercase;
+    }
+
+    .zeileInnen {
+        align-items: center;
+        padding-block: 15px;
+    }
+
+    .befund,
+    .vorher,
+    .nachher {
+        grid-column: auto;
+    }
+
+    /* Die Vorsilben sind nur Hilfe für das Auge am Handy: ab hier sagt der Spaltenkopf es, Hilfstechnik liest sie weiter */
+    .zellenLabel {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+}

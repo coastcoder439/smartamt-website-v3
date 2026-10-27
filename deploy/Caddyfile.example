@@ -1,0 +1,32 @@
+# SmartAmt – statische Website hinter Caddy (z. B. auf dem Server, auf dem backend.tobiassteffen.com läuft).
+# Inhalt von `out/` (npm run build) nach /var/www/smartamt kopieren, diesen Block in das Caddyfile übernehmen,
+# `caddy reload`. Die Header-Werte sind dieselben wie in ../vercel.json und nginx-headers.conf.
+
+smartamt.de {
+	redir https://www.smartamt.de{uri} permanent
+}
+
+www.smartamt.de {
+	root * /var/www/smartamt
+	encode zstd gzip
+	try_files {path} {path}/index.html {path}.html
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://backend.tobiassteffen.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:; object-src 'none'"
+		-Server
+	}
+
+	@static path /_next/static/*
+	header @static Cache-Control "public, max-age=31536000, immutable"
+
+	handle_errors {
+		rewrite * /404.html
+		file_server
+	}
+}

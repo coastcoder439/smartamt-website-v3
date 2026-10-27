@@ -1,0 +1,27 @@
+# Abhängigkeiten
+node_modules
+
+# Next.js und Export
+.next/
+out/
+
+# Umgebung
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Sonstiges
+.DS_Store
+Thumbs.db
+npm-debug.log*
+*.pem
+
+.vercel
+.env*

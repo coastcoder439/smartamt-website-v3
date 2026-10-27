@@ -1,0 +1,164 @@
+/*
+ * Logo-Laufband (Abschnitt „Kunden“), nach dem Muster von Leons tech-banner.tsx (zwei gegenläufige Spuren):
+ * zwei gleiche Gruppen nebeneinander, die Spur fährt um genau eine Gruppenbreite nach links und beginnt
+ * dann übergangslos von vorn. Das Band sitzt im Container der Seite (nicht randlos); jede Gruppe ist mindestens so breit wie das Band (min-width: 100cqw),
+ * damit auch auf breiten Monitoren nie eine Lücke entsteht. Animiert wird nur transform (Compositor, kein Layout).
+ * Seitliche Ausblendmasken lassen die Logos weich ein- und auslaufen.
+ *
+ * Die Logos der NX7.AGENCY sind weiß auf transparent. Auf Hell werden sie einfarbig Tinte (brightness(0)),
+ * Grunddeckkraft 0,7 (dünne Wortmarken tragen per Logo einen höheren Wert in --o, fette Schriftzüge einen
+ * niedrigeren, siehe kunden-logos.ts). Unter der Maus steht ein Logo bei voller Deckkraft und wächst auf
+ * das 1,04-fache (nur transform und opacity), die anderen treten leicht zurück. Hover und Tastaturfokus
+ * pausieren beide Spuren zugleich; außerhalb des Bildes pausieren sie (data-lauf="aus", setzt Kunden.tsx).
+ * Bei reduzierter Bewegung steht nichts still und abgeschnitten: Die Logos stehen ruhig, zentriert und
+ * umbrechend da (zweite Gruppe und zweite Spur entfallen).
+ *
+ * Zwei gegenläufige Spuren auf jeder Breite, damit das Band dicht und lebendig wirkt (die zweite Spur
+ * ist nur Dekoration, aria-hidden); am Handy schmalere Ausblendmaske, Logos fast in voller Größe.
+ */
+
+.band {
+    position: relative;
+    overflow: hidden;
+    container-type: inline-size;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 8%, #000 92%, transparent 100%);
+}
+
+.spur {
+    display: flex;
+    width: max-content;
+    animation: lauf 80s linear infinite;
+    will-change: transform;
+}
+
+.rueckwaerts .spur {
+    animation-direction: reverse;
+    animation-duration: 95s;
+}
+
+.baender:hover .spur,
+.baender:focus-within .spur,
+.spur[data-lauf='aus'] {
+    animation-play-state: paused;
+}
+
+.gruppe {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-around;
+    min-width: 100cqw;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    padding: 0.875rem clamp(1.75rem, 3.6vw, 3.375rem);
+}
+
+.bild {
+    display: block;
+    width: auto;
+    height: var(--h, 2.5rem);
+    max-width: none;
+    filter: brightness(0);
+    opacity: var(--o, 0.7);
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Fokus-Effekt: Das Logo unter der Maus steht voll da und wächst leicht, die anderen treten zurück */
+.baender:hover .bild {
+    opacity: 0.42;
+}
+
+.baender:hover .logo:hover .bild,
+.logo:focus-within .bild {
+    opacity: 1;
+    transform: scale(1.04);
+}
+
+/* Die zweite Spur läuft gegenläufig unter der ersten */
+.zweite {
+    margin-top: 0.25rem;
+}
+
+@keyframes lauf {
+    from {
+        transform: translate3d(0, 0, 0);
+    }
+    to {
+        transform: translate3d(-50%, 0, 0);
+    }
+}
+
+@media (max-width: 639px) {
+    .band {
+        -webkit-mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+        mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+    }
+
+    .logo {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .bild {
+        height: calc(var(--h, 2.5rem) * 0.92);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .band {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .spur {
+        width: 100%;
+        animation: none;
+        will-change: auto;
+    }
+
+    .gruppe {
+        flex-wrap: wrap;
+        justify-content: center;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .gruppe[aria-hidden='true'] {
+        display: none;
+    }
+
+    /* Die zweite Spur wiederholt nur dieselben Logos: bei Stillstand überflüssig */
+    .zweite {
+        display: none;
+    }
+
+    .logo {
+        padding: 0.875rem 1.75rem;
+    }
+
+    .baender:hover .bild {
+        opacity: var(--o, 0.7);
+    }
+
+    .baender:hover .logo:hover .bild {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Handy bei Stillstand: Logos umbrechen, damit zwei bis drei nebeneinander stehen statt einer langen Spalte */
+@media (max-width: 639px) and (prefers-reduced-motion: reduce) {
+    .logo {
+        padding: 0.625rem 0.875rem;
+    }
+
+    .bild {
+        height: calc(var(--h, 2.5rem) * 0.62);
+    }
+}

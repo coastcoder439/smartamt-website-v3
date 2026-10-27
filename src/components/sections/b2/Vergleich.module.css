@@ -1,0 +1,1227 @@
+/* Vorher/Nachher-Ansicht „Musterbach“ samt Befund-Karten (Abschnitt Websites), CI v3: hell, der Regler in der Markenfarbe,
+   Bernstein für offen, Grün für erfüllt. Website v2, Nachtrag 2: Wisch UND die sechs Karten stehen im selben angehefteten Bild
+   (wie bei Tobi: oben die Seite mit dem Regler, im unteren Rand der Fläche die Leiste „Vorher | n von 6 Befunden offen |
+   Nachher“, darunter drei mal zwei Karten). Keine Browserleiste mit Adresse, keine Kästchen und Linien um die Seiten.
+
+   Zwei Anordnungen aus demselben Markup:
+
+   1. Standard (Server-HTML, ohne JavaScript, reduzierte Bewegung, Handy, Tablet, kleine Fenster):
+      zwei Fenster untereinander, ab 1024 px nebeneinander, darunter der Zähler und die Karten (zwei Spalten ab 640 px, drei
+      ab 1024 px). Es gibt keine Scroll-Kopplung an den Regler.
+   2. Angeheftet (data-pinned="true" am .vergleich; setzt Vergleich.tsx ab 1200 x 800 px bei normaler
+      Bewegung): Beide Ebenen liegen übereinander. Die obere („Nachher") wird vom senkrechten Regler freigelegt, nur mit
+      transform: Ein Rahmen (.frei, overflow:hidden) fährt von rechts herein, sein Inhalt (.freiInnen) fährt gegenläufig und
+      steht still, der Regler fährt mit. Die Leiste sitzt im unteren Rand der Fläche, die Karten folgen darunter.
+
+   Alle Maße im Fenster sind Container-Einheiten (cqw, Bezug: .ebene). Die Ansicht skaliert deshalb
+   wie ein Bild. Unter 560 px Fensterbreite stellt die gezeichnete Seite auf einspaltig um (@container).
+   Alle übrigen Maße stehen in rem: Die Wurzelschrift wächst ab 1440 px Fensterbreite (globals.css, Breitbild), die Teile wachsen mit.
+   Geometrie der angehefteten Anordnung: Die Seite ist 0,424 x Breite hoch (42,4 cqw; ohne die kleine Fußzeile der gezeichneten
+   Seiten, die nur nicht angeheftet steht, sonst 46 cqw). Alles andere (Griff, Leiste, Karten, Hinweis, Luft) steht in --rest
+   (rem); die Breite der Bühne folgt der Fensterhöhe: Breite = (Höhe − Kopfzeile − --rest) / 0,424, damit Wisch und alle
+   sechs Karten zugleich im Bild sind. */
+
+.vergleich {
+    position: relative;
+}
+
+.buehne {
+    position: relative;
+    isolation: isolate;
+    margin: 0;
+}
+
+.ebenen {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 56px;
+}
+
+@media (min-width: 1024px) {
+    .ebenen {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--gutter);
+        align-items: start;
+    }
+}
+
+.ebene {
+    position: relative;
+    min-width: 0;
+    container-type: inline-size;
+}
+
+.innen {
+    position: relative;
+}
+
+.name {
+    margin-bottom: 12px;
+}
+
+.unterschrift {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 1.25rem 0 0;
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-2);
+}
+
+.unterschriftZeichen {
+    flex: none;
+    margin-top: 0.2rem;
+    color: var(--ink-3);
+}
+
+/* ---- Fläche, Leiste (Zähler) und Befund-Karten: Standard (nicht angeheftet) --------- */
+
+.flaeche {
+    position: relative;
+}
+
+/* Leiste: nicht angeheftet steht nur der Zähler mittig unter den Seiten */
+.leiste {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.leisteSeite {
+    display: none;
+}
+
+.zaehler {
+    margin: 0;
+}
+
+.zaehlerSicht {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.625rem;
+}
+
+.zahl {
+    display: inline-block;
+    min-width: 0.6em;
+    color: var(--warn);
+    font-size: clamp(2.25rem, 1.8rem + 1.6vw, 3rem);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    text-align: right;
+    animation: zahlWechsel 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.leiste[data-fertig='true'] .zahl {
+    color: var(--ok);
+}
+
+@keyframes zahlWechsel {
+    from {
+        opacity: 0;
+        transform: translateY(40%);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.zaehlerText {
+    color: var(--ink-2);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.raster {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+@media (min-width: 640px) {
+    .raster {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .raster {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.rasterZeile {
+    min-width: 0;
+}
+
+/* Karte: Ampel links, Titel und Statuszeile rechts. Offen in Bernstein, erfüllt in Grün (Farbe und Zeichen). */
+.befund {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+    row-gap: 0.125rem;
+    align-items: center;
+    height: 100%;
+    padding: 0.75rem 0.875rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    transition:
+        background-color 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.befund[data-state='offen'] {
+    background: var(--warn-50);
+    border-color: color-mix(in srgb, var(--warn-dot) 40%, var(--bg));
+}
+
+.befund[data-state='ok'] {
+    background: var(--ok-50);
+    border-color: color-mix(in srgb, var(--ok) 24%, var(--bg));
+}
+
+.titel {
+    grid-column: 2;
+    margin: 0;
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    text-wrap: balance;
+}
+
+.status {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+}
+
+.vorher,
+.nachher {
+    display: block;
+    transition:
+        color 0.35s ease,
+        opacity 0.35s ease;
+}
+
+/* Vorher: offen in Bernstein, erfüllt gedämpft (bleibt lesbar). Nachher: offen gedämpft, erfüllt in Grün. */
+.vorher {
+    color: var(--warn);
+    font-weight: 500;
+}
+
+.nachher {
+    color: var(--ink-3);
+    font-weight: 600;
+}
+
+.befund[data-state='ok'] .vorher {
+    color: var(--ink-3);
+    font-weight: 400;
+}
+
+.befund[data-state='ok'] .nachher {
+    color: var(--ok);
+}
+
+/* Ampel: Bernstein-Punkt (offen) wird zum grünen Haken (erfüllt) */
+.ampel {
+    position: relative;
+    grid-row: 1 / span 2;
+    display: block;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    transition:
+        background-color 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.ampelPunkt,
+.ampelHaken {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transition:
+        opacity 0.3s ease,
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ampelPunkt {
+    width: 0.5625rem;
+    height: 0.5625rem;
+    margin: -0.28125rem 0 0 -0.28125rem;
+    background: var(--warn-dot);
+    border-radius: 50%;
+}
+
+.ampelHaken {
+    width: 1.125rem;
+    height: 1.125rem;
+    margin: -0.5625rem 0 0 -0.5625rem;
+    color: var(--bg);
+}
+
+.ampelHaken path {
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s;
+}
+
+.befund[data-state='offen'] .ampel {
+    background: var(--bg);
+    border-color: color-mix(in srgb, var(--warn-dot) 55%, var(--bg));
+}
+
+.befund[data-state='offen'] .ampelHaken {
+    opacity: 0;
+    transform: scale(0.6);
+}
+
+.befund[data-state='ok'] .ampel {
+    background: var(--ok);
+    border-color: var(--ok);
+}
+
+.befund[data-state='ok'] .ampelPunkt {
+    opacity: 0;
+    transform: scale(0.4);
+}
+
+.befund[data-state='ok'] .ampelHaken path {
+    stroke-dashoffset: 0;
+}
+
+/* ---- Fenster um die gezeichnete Seite (ruhiger Rahmen, keine Browserleiste) -------- */
+
+.fenster {
+    overflow: hidden;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+}
+
+/* Der Regler (Spur und Linie) gibt es nur angeheftet. */
+.spur,
+.pruefung {
+    display: none;
+}
+
+/* ---- Die gezeichnete Seite ------------------------------------------------ */
+
+.seite {
+    --k: 1cqw;
+    display: flex;
+    flex-direction: column;
+    height: calc(46 * var(--k));
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    line-height: 1.35;
+}
+
+/* Fußzeile beider Seiten: vier gleiche Spalten */
+.fuss {
+    display: grid;
+    flex: none;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: center;
+    height: calc(3.6 * var(--k));
+    padding-inline: calc(1.4 * var(--k));
+    overflow: hidden;
+    font-size: calc(0.85 * var(--k));
+    white-space: nowrap;
+}
+
+.fuss span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Vorher: eine typische alte Gemeinde-Seite ----------------------------- */
+
+.alt {
+    background: var(--mb-alt-grund);
+    color: var(--mb-alt-text);
+    font-family: Arial, Helvetica, 'Liberation Sans', sans-serif;
+}
+
+/* Kopf: blauer Block mit abgesetzter Kante (wie die Rahmen aus den frühen 2000ern), Wappen-Kästchen links */
+.vKopf {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: calc(1.5 * var(--k));
+    height: calc(10.2 * var(--k));
+    margin: calc(1.2 * var(--k)) calc(1.4 * var(--k)) 0;
+    padding-inline: calc(1.6 * var(--k));
+    background: var(--mb-alt-blau);
+    border: calc(0.25 * var(--k)) solid;
+    border-color: var(--mb-alt-blau-hell) var(--mb-alt-blau-dunkel) var(--mb-alt-blau-dunkel) var(--mb-alt-blau-hell);
+    color: var(--bg);
+}
+
+.vWappen {
+    flex: none;
+    width: calc(6.2 * var(--k));
+    height: calc(6.2 * var(--k));
+    background: var(--mb-alt-wappen);
+    border: calc(0.25 * var(--k)) solid var(--bg);
+}
+
+.vKopfText {
+    min-width: 0;
+}
+
+/* Die alte Seite setzt ihren Titel in einer Systemschrift mit Serifen */
+.vTitel {
+    font-family: Georgia, 'Times New Roman', 'Liberation Serif', serif;
+    font-size: calc(3.7 * var(--k));
+    font-weight: 700;
+    line-height: 1.05;
+    white-space: nowrap;
+}
+
+.vUntertitel {
+    margin-top: calc(0.5 * var(--k));
+    font-size: calc(1.75 * var(--k));
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* Laufschrift: hellgelber Streifen mit dunkelroter Schrift, läuft rechts aus dem Bild */
+.vLauf {
+    display: flex;
+    flex: none;
+    align-items: center;
+    height: calc(3.2 * var(--k));
+    margin: calc(1.3 * var(--k)) calc(1.4 * var(--k)) 0;
+    padding-inline: calc(1.2 * var(--k));
+    overflow: hidden;
+    background: var(--mb-alt-lauf);
+    border: calc(0.12 * var(--k)) solid var(--mb-alt-blass);
+    color: var(--mb-alt-lauf-text);
+    font-size: calc(1.5 * var(--k));
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.vLauf span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.vHaupt {
+    display: grid;
+    flex: 1 1 0;
+    grid-template-columns: calc(17 * var(--k)) minmax(0, 1fr) calc(23 * var(--k));
+    gap: calc(1.4 * var(--k));
+    min-height: 0;
+    padding: calc(1.3 * var(--k)) calc(1.4 * var(--k)) calc(1.2 * var(--k));
+    overflow: hidden;
+}
+
+/* Linke Linkleiste: bläuliches Grau, unterstrichene blaue Links mit „»“ */
+.vLeiste {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.7 * var(--k));
+    padding: calc(1 * var(--k)) calc(1.1 * var(--k));
+    overflow: hidden;
+    background: var(--mb-alt-leiste);
+    border: calc(0.12 * var(--k)) solid var(--mb-alt-blass);
+    font-size: calc(1.6 * var(--k));
+}
+
+.vLeistenLink {
+    color: var(--mb-alt-link);
+    text-decoration: underline;
+    white-space: nowrap;
+}
+
+.vMitte {
+    display: flex;
+    flex-direction: column;
+    gap: calc(0.7 * var(--k));
+    min-width: 0;
+    font-size: calc(1.55 * var(--k));
+}
+
+.vUeber {
+    color: var(--ink-2);
+    font-size: calc(2.2 * var(--k));
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.vLink {
+    color: var(--mb-alt-link);
+    text-decoration: underline;
+}
+
+/* blasser Fließtext auf Beige: der Kontrast ist zu gering */
+.vText {
+    color: var(--mb-alt-blass);
+}
+
+/* Besucherzähler: schwarzer Kasten mit grüner Schrift in Festbreite */
+.vZaehler {
+    align-self: flex-start;
+    margin-top: auto;
+    padding: calc(0.45 * var(--k)) calc(1 * var(--k));
+    background: var(--mb-alt-zaehler);
+    color: var(--mb-alt-zaehler-text);
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: calc(1.3 * var(--k));
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+/* Kasten für die Karte: schraffierte Fläche, Text in blassem Grau, lädt sofort Google */
+.vKarte {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(1 * var(--k));
+    background: repeating-linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--mb-alt-blass) 32%, var(--mb-alt-grund)) 0 calc(0.35 * var(--k)),
+        var(--mb-alt-grund) calc(0.35 * var(--k)) calc(1.1 * var(--k))
+    );
+    border: calc(0.12 * var(--k)) solid var(--mb-alt-blass);
+    color: var(--mb-alt-text);
+    font-size: calc(1.5 * var(--k));
+    text-align: center;
+}
+
+.vFuss {
+    border-top: calc(0.12 * var(--k)) solid var(--mb-alt-blass);
+    color: var(--mb-alt-blass);
+}
+
+/* ---- Nachher: das Gemeinde-Design der Angebote ------------------------------- */
+
+.neu {
+    background: var(--bg);
+}
+
+.nKopf {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    height: calc(6.8 * var(--k));
+    padding-inline: calc(1.8 * var(--k));
+    border-bottom: calc(0.1 * var(--k)) solid var(--line);
+}
+
+.nMarke {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(1.1 * var(--k));
+    white-space: nowrap;
+}
+
+.nWappen {
+    flex: none;
+    width: calc(3.5 * var(--k));
+    height: calc(4.2 * var(--k));
+}
+
+.wappenFlaeche {
+    fill: var(--bg);
+}
+
+.wappenGruen {
+    fill: var(--mb-gruen);
+}
+
+.wappenRand {
+    fill: none;
+    stroke: var(--line-2);
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+}
+
+.nName {
+    color: var(--ink);
+    font-size: calc(2.5 * var(--k));
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1;
+}
+
+.nNav {
+    display: flex;
+    gap: calc(2.6 * var(--k));
+    color: var(--ink);
+    font-size: calc(1.4 * var(--k));
+    font-weight: 600;
+}
+
+/* Hinweisleiste: hellgrün, grüner Punkt */
+.nHinweis {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: calc(0.9 * var(--k));
+    height: calc(3 * var(--k));
+    padding-inline: calc(1.8 * var(--k));
+    background: var(--mb-gruen-hell);
+    border-bottom: calc(0.1 * var(--k)) solid var(--mb-gruen-linie);
+    color: var(--ink);
+    font-size: calc(1.25 * var(--k));
+    font-weight: 600;
+}
+
+.nPunkt {
+    flex: none;
+    width: calc(0.85 * var(--k));
+    height: calc(0.85 * var(--k));
+    background: var(--mb-gruen);
+    border-radius: 50%;
+}
+
+/* Großes Bild mit Titel; das Suchfeld ragt unten über die Kante in die Kacheln */
+.nHeld {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    height: calc(21.4 * var(--k));
+}
+
+.nBild {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.himmelOben {
+    stop-color: var(--mb-himmel-oben);
+}
+
+.himmelMitte {
+    stop-color: var(--mb-himmel-mitte);
+}
+
+.himmelUnten {
+    stop-color: var(--mb-himmel-unten);
+}
+
+.wolke {
+    fill: var(--bg);
+    opacity: 0.4;
+}
+
+.huegelFern {
+    fill: var(--mb-huegel-fern);
+}
+
+.baumFern {
+    fill: var(--mb-huegel-mitte);
+}
+
+.huegelMitte {
+    fill: var(--mb-huegel-mitte);
+}
+
+.huegelNah {
+    fill: var(--mb-huegel-nah);
+}
+
+.weg {
+    fill: none;
+    stroke: var(--mb-weg);
+    stroke-linecap: round;
+    stroke-width: 11;
+    opacity: 0.85;
+}
+
+.haus {
+    fill: var(--mb-haus);
+}
+
+.hausSchatten {
+    fill: var(--mb-haus-schatten);
+}
+
+.dach {
+    fill: var(--mb-dach);
+}
+
+.dachDunkel {
+    fill: var(--mb-dach-dunkel);
+}
+
+.fenster {
+    fill: var(--mb-fenster);
+}
+
+.tuer {
+    fill: var(--mb-dach-dunkel);
+}
+
+.uhr {
+    fill: var(--bg);
+    stroke: var(--mb-haus-schatten);
+    stroke-width: 2;
+}
+
+.zeiger {
+    fill: none;
+    stroke: var(--mb-fenster);
+    stroke-linecap: round;
+    stroke-width: 1.8;
+}
+
+.kreuz {
+    fill: none;
+    stroke: var(--mb-dach-dunkel);
+    stroke-linecap: round;
+    stroke-width: 2;
+}
+
+.baum {
+    fill: var(--mb-baum);
+}
+
+.baumHell {
+    fill: var(--mb-baum-hell);
+}
+
+.nHeldText {
+    position: absolute;
+    bottom: calc(6.4 * var(--k));
+    left: calc(3 * var(--k));
+    color: var(--bg);
+}
+
+.nTitel {
+    font-size: calc(6 * var(--k));
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.nUntertitel {
+    margin-top: calc(0.8 * var(--k));
+    font-size: calc(1.55 * var(--k));
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.nSuche {
+    position: absolute;
+    right: calc(3 * var(--k));
+    bottom: calc(-2.6 * var(--k));
+    left: calc(3 * var(--k));
+    display: flex;
+    align-items: center;
+    gap: calc(1 * var(--k));
+    height: calc(5.2 * var(--k));
+    padding: calc(0.9 * var(--k));
+    background: var(--bg);
+    border: calc(0.1 * var(--k)) solid var(--line);
+    border-radius: calc(1.2 * var(--k));
+    box-shadow: var(--shadow-md);
+}
+
+.nFeld {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    min-width: 0;
+    height: calc(3.4 * var(--k));
+    padding-inline: calc(1.2 * var(--k));
+    overflow: hidden;
+    border: calc(0.1 * var(--k)) solid var(--line-2);
+    border-radius: calc(0.8 * var(--k));
+    color: var(--ink-3);
+    font-size: calc(1.3 * var(--k));
+    white-space: nowrap;
+}
+
+.nKnopf {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    height: calc(3.4 * var(--k));
+    padding-inline: calc(1.8 * var(--k));
+    background: var(--mb-gruen);
+    border-radius: calc(0.8 * var(--k));
+    color: var(--bg);
+    font-size: calc(1.3 * var(--k));
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Kacheln unter dem Bild */
+.nTiles {
+    display: grid;
+    flex: 1 1 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: calc(1.2 * var(--k));
+    min-height: 0;
+    padding: calc(4.4 * var(--k)) calc(1.8 * var(--k)) calc(1.2 * var(--k));
+}
+
+.nKachel {
+    display: flex;
+    align-items: center;
+    gap: calc(1 * var(--k));
+    min-width: 0;
+    padding-inline: calc(1.3 * var(--k));
+    background: var(--bg);
+    border: calc(0.1 * var(--k)) solid var(--line);
+    border-radius: calc(1.2 * var(--k));
+    box-shadow: var(--shadow-sm);
+    color: var(--ink);
+    font-size: calc(1.45 * var(--k));
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+}
+
+.nIconFlaeche {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: calc(3.4 * var(--k));
+    height: calc(3.4 * var(--k));
+    background: var(--mb-gruen-hell);
+    border-radius: 50%;
+    color: var(--mb-gruen);
+}
+
+.nIcon {
+    width: calc(1.8 * var(--k));
+    height: calc(1.8 * var(--k));
+}
+
+.nFuss {
+    background: var(--bg);
+    border-top: calc(0.1 * var(--k)) solid var(--line);
+    color: var(--ink-3);
+}
+
+/* ---- Schmales Fenster (unter 560 px): einspaltige Seite -------------------- */
+
+@container (max-width: 559px) {
+    .seite {
+        --k: 2.9cqw;
+        height: auto;
+    }
+
+    .fuss {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.4em;
+        height: auto;
+        padding-block: 0.9em;
+        font-size: calc(1.1 * var(--k));
+    }
+
+    /* Vorher */
+    .vKopf {
+        height: auto;
+        margin: calc(1.2 * var(--k)) calc(1.2 * var(--k)) 0;
+        padding: calc(1.2 * var(--k)) calc(1.3 * var(--k));
+        gap: calc(1.2 * var(--k));
+    }
+
+    .vWappen {
+        width: calc(3.8 * var(--k));
+        height: calc(3.8 * var(--k));
+    }
+
+    .vTitel {
+        font-size: calc(2.1 * var(--k));
+    }
+
+    .vUntertitel {
+        font-size: calc(1.1 * var(--k));
+    }
+
+    .vLauf {
+        height: calc(2.7 * var(--k));
+        margin-inline: calc(1.2 * var(--k));
+        font-size: calc(1.05 * var(--k));
+    }
+
+    .vHaupt {
+        display: flex;
+        flex: none;
+        flex-direction: column;
+        gap: calc(1.1 * var(--k));
+        padding: calc(1.1 * var(--k)) calc(1.2 * var(--k));
+    }
+
+    .vLeiste {
+        flex-flow: row wrap;
+        column-gap: 1.1em;
+        row-gap: 0.3em;
+        font-size: calc(1.1 * var(--k));
+    }
+
+    .vMitte {
+        font-size: calc(1.1 * var(--k));
+    }
+
+    .vUeber {
+        font-size: calc(1.5 * var(--k));
+    }
+
+    .vZaehler {
+        margin-top: calc(0.4 * var(--k));
+        font-size: calc(0.95 * var(--k));
+    }
+
+    .vKarte {
+        height: calc(6 * var(--k));
+        font-size: calc(1.1 * var(--k));
+    }
+
+    /* Nachher */
+    .nKopf {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: calc(1.1 * var(--k));
+        height: auto;
+        padding-block: calc(1.4 * var(--k));
+    }
+
+    .nWappen {
+        width: calc(2.6 * var(--k));
+        height: calc(3.1 * var(--k));
+    }
+
+    .nName {
+        font-size: calc(1.9 * var(--k));
+    }
+
+    .nNav {
+        gap: calc(1.7 * var(--k));
+        font-size: calc(1.1 * var(--k));
+    }
+
+    .nHinweis {
+        height: auto;
+        padding-block: calc(0.8 * var(--k));
+        font-size: calc(1 * var(--k));
+    }
+
+    .nHeld {
+        height: calc(15.5 * var(--k));
+    }
+
+    .nHeldText {
+        bottom: calc(5.4 * var(--k));
+        left: calc(1.6 * var(--k));
+        right: calc(1.6 * var(--k));
+    }
+
+    .nTitel {
+        font-size: calc(3.6 * var(--k));
+    }
+
+    .nUntertitel {
+        font-size: calc(1.05 * var(--k));
+    }
+
+    .nSuche {
+        right: calc(1.4 * var(--k));
+        bottom: calc(-2.2 * var(--k));
+        left: calc(1.4 * var(--k));
+        gap: calc(0.7 * var(--k));
+        height: calc(4.4 * var(--k));
+        padding: calc(0.7 * var(--k));
+    }
+
+    .nFeld,
+    .nKnopf {
+        height: calc(3 * var(--k));
+        font-size: calc(0.95 * var(--k));
+    }
+
+    .nFeld {
+        padding-inline: calc(0.9 * var(--k));
+    }
+
+    .nKnopf {
+        padding-inline: calc(1 * var(--k));
+    }
+
+    .nTiles {
+        flex: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: calc(0.9 * var(--k));
+        padding: calc(3.6 * var(--k)) calc(1.4 * var(--k)) calc(1.4 * var(--k));
+    }
+
+    .nKachel {
+        gap: calc(0.8 * var(--k));
+        min-height: calc(4.6 * var(--k));
+        padding: calc(0.7 * var(--k)) calc(0.9 * var(--k));
+        font-size: calc(1.05 * var(--k));
+    }
+
+    .nIconFlaeche {
+        width: calc(2.6 * var(--k));
+        height: calc(2.6 * var(--k));
+    }
+
+    .nIcon {
+        width: calc(1.4 * var(--k));
+        height: calc(1.4 * var(--k));
+    }
+}
+
+/* ---- Angeheftet: Ebenen übereinander, Regler, Leiste und Karten in einem Bild ----- */
+
+.vergleich[data-pinned='true'] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - var(--header-h));
+    height: calc(100svh - var(--header-h));
+}
+
+.vergleich[data-pinned='true'] .buehne {
+    /* Die Breite folgt der Fensterhöhe: Seite = 0,424 x Breite hoch, dazu --rest für Griff (2 rem), Leiste (3 rem),
+       zwei Kartenreihen (7,75 rem), Abstände, Hinweiszeile und Luft. Höchstens 110 rem. */
+    --rest: 18.5rem;
+    flex: none;
+    width: min(100%, 110rem, calc((100vh - var(--header-h) - var(--rest)) / 0.424));
+    width: min(100%, 110rem, calc((100svh - var(--header-h) - var(--rest)) / 0.424));
+    padding-top: 2rem;
+}
+
+/* Die Fläche: Seite, Regler und Leiste in einer Karte. Ohne overflow:hidden, damit der Griff über den Rand ragen darf;
+   die Seiten tragen die oberen Rundungen selbst. */
+.vergleich[data-pinned='true'] .flaeche {
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    box-shadow: var(--shadow-md);
+}
+
+.vergleich[data-pinned='true'] .ebenen {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    /* „Nachher" fährt von rechts herein: Der Rahmen darf nie eine waagerechte Scroll-Leiste auslösen */
+    overflow-x: clip;
+}
+
+.vergleich[data-pinned='true'] .ebene {
+    grid-area: 1 / 1;
+    background: var(--bg);
+}
+
+.vergleich[data-pinned='true'] .innen {
+    padding: 0;
+}
+
+/* Angeheftet ohne die kleine Fußzeile der gezeichneten Seiten (sie steht im HTML und nicht angeheftet): Die Seite wird flacher
+   und damit der ganze Wisch größer, ohne dass die Karten aus dem Bild rutschen. */
+.vergleich[data-pinned='true'] .seite {
+    height: calc(42.4 * var(--k));
+}
+
+.vergleich[data-pinned='true'] .fuss {
+    display: none;
+}
+
+.vergleich[data-pinned='true'] .fenster {
+    border: 0;
+    border-radius: 1.25rem 1.25rem 0 0;
+    box-shadow: none;
+}
+
+/* Rahmen und Inhalt von „Nachher" bewegen sich gegenläufig (GSAP, x in Pixeln), nur transform.
+   Außerhalb der Anheftung lösen sich beide Hüllen im Layout auf. */
+.frei,
+.freiInnen {
+    display: contents;
+}
+
+.vergleich[data-pinned='true'] .frei {
+    display: block;
+    grid-area: 1 / 1;
+    overflow: hidden;
+    will-change: transform;
+}
+
+.vergleich[data-pinned='true'] .freiInnen {
+    display: block;
+    will-change: transform;
+}
+
+/* „Vorher" und „Nachher" stehen angeheftet in der Leiste; die Namen der Gruppen bleiben für Hilfstechnik */
+.vergleich[data-pinned='true'] .name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* Regler: dünn, in der Markenfarbe, mit weichem Schein (wie im Website-Check des Hero). Sein runder Griff sitzt am oberen
+   Ende, über der Fläche: weiß, ohne Text, nie über dem Inhalt der Seite. Linie und Griff beginnen rechts (Vorher). */
+.vergleich[data-pinned='true'] .spur {
+    position: absolute;
+    top: -1.9rem;
+    right: 0;
+    bottom: 3rem;
+    left: 0;
+    z-index: 5;
+    display: block;
+    pointer-events: none;
+}
+
+.vergleich[data-pinned='true'] .pruefung {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: block;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--brand);
+    border-radius: 99px;
+    box-shadow: 0 0 14px 2px color-mix(in srgb, var(--brand) 40%, transparent);
+    pointer-events: none;
+    will-change: transform;
+}
+
+.griff {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    color: var(--brand-ink);
+    cursor: ew-resize;
+    pointer-events: auto;
+    touch-action: none;
+    transform: translateX(-50%);
+}
+
+.griff svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Leiste im unteren Rand der Fläche: Vorher | n von 6 Befunden offen | Nachher */
+.vergleich[data-pinned='true'] .leiste {
+    justify-content: space-between;
+    height: 3rem;
+    margin: 0;
+    padding-inline: 1.25rem;
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 1.25rem 1.25rem;
+}
+
+.vergleich[data-pinned='true'] .leisteSeite {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.leisteVorher {
+    color: var(--warn);
+}
+
+.leisteNachher {
+    color: var(--ok);
+}
+
+.leistePunkt {
+    width: 0.5625rem;
+    height: 0.5625rem;
+    background: var(--warn-dot);
+    border-radius: 50%;
+}
+
+.leisteNachher svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.vergleich[data-pinned='true'] .zahl {
+    font-size: 1.75rem;
+}
+
+/* Karten: drei mal zwei, Statuszeile Vorher → Nachher als Überblendung (nur opacity) */
+.vergleich[data-pinned='true'] .raster {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.vergleich[data-pinned='true'] .befund {
+    min-height: 3.5rem;
+    padding: 0.5rem 0.875rem;
+}
+
+.vergleich[data-pinned='true'] .status {
+    display: grid;
+}
+
+.vergleich[data-pinned='true'] .vorher,
+.vergleich[data-pinned='true'] .nachher {
+    grid-area: 1 / 1;
+}
+
+.vergleich[data-pinned='true'] .befund[data-state='offen'] .nachher,
+.vergleich[data-pinned='true'] .befund[data-state='ok'] .vorher {
+    opacity: 0;
+}
+
+.vergleich[data-pinned='true'] .nachher {
+    color: var(--ok);
+}
+
+.vergleich[data-pinned='true'] .unterschrift {
+    justify-content: center;
+    margin-top: 0.75rem;
+    /* eine Zeile auch bei der kleinsten angehefteten Fläche (1200 x 800 px) */
+    font-size: 0.75rem;
+}
