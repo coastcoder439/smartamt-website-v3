@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { QUELLEN_FRAGEN, Quellenliste } from '@/components/seiten/Fussnoten';
 import SeitenKopf from '@/components/seiten/SeitenKopf';
+import { EINZELNES } from '@/lib/abschnitte';
 import SeitenSchluss from '@/components/seiten/SeitenSchluss';
 import Faq from '@/components/sections/Faq';
 import Recht from '@/components/sections/Recht';
@@ -27,6 +29,7 @@ export default function FragenPage() {
             <Faq />
             <Recht weiss />
             <SeitenSchluss />
+            {EINZELNES.quellenZeilen ? null : <Quellenliste eintraege={QUELLEN_FRAGEN} />}
         </>
     );
 }

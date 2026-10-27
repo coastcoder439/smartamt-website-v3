@@ -3,7 +3,7 @@
 // Quelle: Natural Earth, „Admin 1 – States, Provinces“, Maßstab 1:10 Mio. (ne_10m_admin_1_states_provinces), Stand des
 // Repos nvkelso/natural-earth-vector am 27.10.2026. Lizenz: gemeinfrei (public domain), Nutzung ohne Erlaubnis und ohne
 // Namensnennung erlaubt (https://www.naturalearthdata.com/about/terms-of-use/). Erzeugt mit einer einfachen Zylinderprojektion
-// (Längengrad mal cos 51.2°), vereinfacht (Douglas-Peucker); Orte: ein Ort je Land und Leipzig (Sitz), Netz aus minimalem
+// (Längengrad mal cos 51.2°), vereinfacht (Douglas-Peucker); Orte: ein Ort je Land, Leipzig (Sitz), Nürnberg und Regensburg, Netz aus minimalem
 // Spannbaum plus je zwei nächste Nachbarn, ohne Linien dicht an einem dritten Ort
 // vorbei und ohne sehr lange Linien. Beleg: docs/packages/03-website-v3/evidence/karte-quelle.md. Nicht von Hand bearbeiten.
 
@@ -47,6 +47,8 @@ export const STAEDTE: readonly { name: string; x: number; y: number }[] = [
     { name: "Saarbrücken", x: 124.8, y: 1013.8 },
     { name: "Stuttgart", x: 363.2, y: 1094.7 },
     { name: "München", x: 624.8, y: 1206.2 },
+    { name: "Nürnberg", x: 569.7, y: 976.9 },
+    { name: "Regensburg", x: 681.5, y: 1053.3 },
 ];
 
 /** Verbindungen des Netzes als Index-Paare in STAEDTE. */
@@ -70,5 +72,8 @@ export const NETZ: readonly (readonly [number, number])[] = [
     [13, 14],
     [13, 15],
     [14, 15],
-    [15, 16],
+    [15, 17],
+    [16, 17],
+    [16, 18],
+    [17, 18],
 ];

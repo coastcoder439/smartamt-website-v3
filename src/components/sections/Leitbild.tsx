@@ -19,7 +19,7 @@ import { Staffel } from './b3/Staffel';
  * schmale Felder, ab 768 px zwei Spalten, der fünfte Punkt über beide) mit Nummer,
  * Titel und einem Satz, je mit feiner Linie darüber. Die Punkte steigen gestaffelt auf (b3/Staffel.tsx).
  */
-const PUNKTE: readonly { titel: string; text: React.ReactNode }[] = [
+export const PUNKTE: readonly { titel: string; text: React.ReactNode }[] = [
     {
         titel: 'Deutschland digital machen',
         text: 'Wir digitalisieren Gemeinden, Ämter und Behörden dort, wo Bürgerinnen und Bürger sie erleben: auf der Website ihrer Gemeinde.',

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Check } from 'lucide-react';
 import { Label } from '@/components/ui/Label';
+import { Fussnote } from '@/components/seiten/Fussnoten';
 import { EINZELNES } from '@/lib/abschnitte';
 import { RevealHeading, RevealText } from '@/components/ui/Reveal';
 import { AkkordeonKarte } from './c3/Akkordeon';
@@ -100,10 +101,13 @@ export default function Recht({ weiss = false }: { weiss?: boolean }) {
                             <RevealText className="mt-6 max-w-[30em] text-lead">
                                 Für Websites öffentlicher Stellen gelten klare Regeln. Wir setzen sie technisch um, damit Sie
                                 sich darauf verlassen können.
+                                {EINZELNES.quellenZeilen ? null : <Fussnote n={1} />}
                             </RevealText>
-                            <RevealText className="mt-6 font-mono text-klein text-ink-3">
-                                Diese Übersicht ersetzt keine Rechtsberatung. Stand: Oktober 2026.
-                            </RevealText>
+                            {EINZELNES.quellenZeilen ? (
+                                <RevealText className="mt-6 font-mono text-klein text-ink-3">
+                                    Diese Übersicht ersetzt keine Rechtsberatung. Stand: Oktober 2026.
+                                </RevealText>
+                            ) : null}
 
                             {/* Leitlinie: ein Knoten je Grundlage; der offene ist orange, die Linie füllt sich bis dorthin. */}
                             <nav aria-label="Rechtsgrundlagen" className="mt-8 hidden lg:block">

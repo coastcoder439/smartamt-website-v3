@@ -147,6 +147,20 @@ export const EINZELNES = {
      * gefällt mir nicht. Das sieht sehr nach KI aus.“ Bei true wieder alle Raster wie in v2.
      */
     punktraster: false,
+    /**
+     * v3, /ueber-uns: fünf Versprechen und Deutschlandkarte nebeneinander in einem Abschnitt (ueber/LeitbildKarte.tsx), mit
+     * Häkchen je Punkt und dem Netz im selben Takt. Owner 27.10.2026: „Das sollte nebeneinander sein. … Und rechts daneben sind
+     * die 5 Punkte. Und mit jedem Punkt beim Runterscrollen kommt ein Häkchen dann ran. Und währenddessen werden auch immer mehr
+     * Karten Dinger da vernetzt.“ Bei false wieder zwei Abschnitte untereinander (Leitbild.tsx, ueber/Deutschlandkarte.tsx).
+     */
+    leitbildMitKarte: true,
+    /**
+     * v3: Quellen- und Stand-Zeilen mitten in den Abschnitten (Mission, Lage, Recht & Sicherheit) sind ausgeblendet; an der Stelle
+     * steht eine kleine Fußnote, die Quellen stehen einmal am Seitenende (seiten/Fussnoten.tsx). Owner 27.10.2026: „Diese Quellen
+     * und Standdinger sollen weg. Das sieht immer so nach KI aus.“ und „mit einem ganz kleinen Sternchen 1 oder so und dann unten
+     * einmal aufführen am Ende der Seite“. Bei true wieder die Zeilen wie in v2.
+     */
+    quellenZeilen: false,
     /** v2-Platz des Logo-Bandes der Kunden direkt unter dem Hero. In v3 steht es im Teil „Vertrauen“ über den Zitaten. */
     kundenUnterHero: false,
     /** v2: zweite, gegenläufige Spur im Logo-Band der Kunden (reine Dekoration). v3: ein Band. */

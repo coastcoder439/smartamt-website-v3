@@ -116,7 +116,7 @@ export default function Beraterkarte() {
                                     </p>
                                 </div>
                             </div>
-                            <p className="mt-6 text-[1.0625rem] leading-relaxed text-ink-2">{person.satz}</p>
+                            <p className="mt-6 text-[1.0625rem] leading-relaxed text-ink-2 whitespace-pre-line">{person.satz}</p>
                         </li>
                     );
                 })}

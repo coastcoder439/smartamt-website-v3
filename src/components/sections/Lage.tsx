@@ -1,4 +1,5 @@
 import { Label } from '@/components/ui/Label';
+import { Fussnote } from '@/components/seiten/Fussnoten';
 import { EINZELNES } from '@/lib/abschnitte';
 import { RevealText } from '@/components/ui/Reveal';
 import Rangliste from './b2/Rangliste';
@@ -43,6 +44,7 @@ export default function Lage() {
                     <RevealText className="mt-8 text-[clamp(1.375rem,1.1rem+1.1vw,1.875rem)] font-semibold leading-[1.15] tracking-[-0.02em] text-ink">
                         So steht Deutschland im <span className="whitespace-nowrap">E-Government-Ranking</span> der
                         Vereinten Nationen. Dänemark führt, Estland folgt.
+                        {EINZELNES.quellenZeilen ? null : <Fussnote n={1} />}
                     </RevealText>
                     <RevealText className="mt-6 max-w-[34em]">
                         Deutschland hat aufgeholt, von Platz 22 im Jahr 2022 auf Platz 12 im Jahr 2024. Entschieden wird
@@ -65,16 +67,21 @@ export default function Lage() {
                             >
                                 <Zaehler von={0} bis={10753} dauer={2.2} start="top 90%" />
                             </span>
-                            <span className="text-[1.375rem] font-semibold tracking-[-0.02em] text-ink">Gemeinden</span>
+                            <span className="text-[1.375rem] font-semibold tracking-[-0.02em] text-ink">
+                                Gemeinden
+                                {EINZELNES.quellenZeilen ? null : <Fussnote n={3} />}
+                            </span>
                         </p>
-                        <p className="font-mono text-[0.8125rem] text-ink-2">Stand 31.12.2025</p>
+                        {EINZELNES.quellenZeilen ? <p className="font-mono text-[0.8125rem] text-ink-2">Stand 31.12.2025</p> : null}
                     </div>
                 </div>
 
-                <p className="col-span-12 max-w-[72ch] font-mono text-klein text-ink-2">
-                    Quellen: UN E-Government Survey 2024 (EGDI, 193 Staaten); Statistisches Bundesamt,
-                    Verwaltungsgliederung am 31.12.2025.
-                </p>
+                {EINZELNES.quellenZeilen ? (
+                    <p className="col-span-12 max-w-[72ch] font-mono text-klein text-ink-2">
+                        Quellen: UN E-Government Survey 2024 (EGDI, 193 Staaten); Statistisches Bundesamt,
+                        Verwaltungsgliederung am 31.12.2025.
+                    </p>
+                ) : null}
             </div>
         </section>
     );

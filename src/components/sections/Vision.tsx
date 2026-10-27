@@ -1,7 +1,9 @@
 'use client';
 
 import { useRef } from 'react';
+import { Fussnote } from '@/components/seiten/Fussnoten';
 import { Label } from '@/components/ui/Label';
+import { EINZELNES } from '@/lib/abschnitte';
 import { Leitlinie } from '@/components/ui/Leitlinie';
 import { RevealHeading, RevealText } from '@/components/ui/Reveal';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
@@ -82,23 +84,29 @@ export default function Vision() {
                                 ref={absatz}
                                 className="max-w-[28em] text-[clamp(1.5rem,1.1rem+1.6vw,2.25rem)] font-medium leading-[1.25] tracking-[-0.025em] text-ink [text-wrap:pretty]"
                             >
-                                In Dänemark und Estland gehören digitale Behördengänge zum Alltag. Deutschland zieht nach: Seit
+                                In Dänemark und Estland gehören digitale Behördengänge zum Alltag.
+                                {EINZELNES.quellenZeilen ? null : <Fussnote n={1} />} Deutschland zieht nach: Seit
                                 2024 verpflichtet das geänderte Onlinezugangsgesetz Bund und Länder, ihre Leistungen elektronisch
-                                anzubieten, ohne Medienbruch und barrierefrei, bis hin zu den Gemeinden. Entscheidend ist, dass
+                                anzubieten, ohne Medienbruch und barrierefrei, bis hin zu den Gemeinden.
+                                {EINZELNES.quellenZeilen ? null : <Fussnote n={2} />} Entscheidend ist, dass
                                 das vor Ort ankommt, auf der Website jeder Gemeinde und bei den Menschen, die dort arbeiten.
                                 Dafür gibt es SmartAmt.
                             </p>
                         </div>
                     </div>
 
-                    {/* Randnotiz: Quellenzeile, am Anfang des Absatzes ausgerichtet */}
-                    <div className="col-span-12 lg:col-span-10 lg:col-start-1 lg:row-start-2">
-                        <div>
-                            <RevealText className="max-w-[34ch] border-t border-line-2 pt-4 font-mono text-klein text-ink-3 md:ml-[calc(2px+2rem)]">
-                                Quellen: UN E-Government Survey 2024; § 1a Onlinezugangsgesetz in der Fassung vom 19.07.2024.
-                            </RevealText>
-                        </div>
-                    </div>
+                    {EINZELNES.quellenZeilen ? (
+                        <>
+                            {/* Randnotiz: Quellenzeile, am Anfang des Absatzes ausgerichtet */}
+                            <div className="col-span-12 lg:col-span-10 lg:col-start-1 lg:row-start-2">
+                                <div>
+                                    <RevealText className="max-w-[34ch] border-t border-line-2 pt-4 font-mono text-klein text-ink-3 md:ml-[calc(2px+2rem)]">
+                                        Quellen: UN E-Government Survey 2024; § 1a Onlinezugangsgesetz in der Fassung vom 19.07.2024.
+                                    </RevealText>
+                                </div>
+                            </div>
+                        </>
+                    ) : null}
                 </div>
             </div>
         </section>

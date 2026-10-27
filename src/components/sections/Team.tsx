@@ -81,7 +81,7 @@ export default function Team() {
                                                     </span>
                                                 ))}
                                             </p>
-                                            <p className="mt-5 text-[1.0625rem] leading-relaxed">{person.satz}</p>
+                                            <p className="mt-5 text-[1.0625rem] leading-relaxed whitespace-pre-line">{person.satz}</p>
                                             {person.telefon || person.email || person.link ? (
                                                 <ul role="list" className="mt-auto space-y-0.5 pt-5 text-klein">
                                                     {person.telefon && person.telefonHref ? (

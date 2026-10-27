@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { Label } from '@/components/ui/Label';
 import { useIsoLayoutEffect } from '@/hooks/useIsoLayoutEffect';
+import { EINZELNES } from '@/lib/abschnitte';
 import { gsap, registerGsap } from '@/lib/gsap';
 import { cn } from '@/lib/utils';
 import { LABEL_GROSS } from '../c2/abschnitt';
@@ -10,7 +11,8 @@ import { LABEL_GROSS } from '../c2/abschnitt';
 /**
  * Rangliste (Abschnitt „Lage“): drei horizontale Balken in einer weißen Karte. Dänemark Platz 1, Estland
  * Platz 2, Deutschland Platz 12 (orange). Die Balkenlänge ist der E-Government-Entwicklungsindex (EGDI)
- * des UN-Berichts 2024 auf der Skala 0 bis 1, die Werte stehen am Balken (belegt in
+ * des UN-Berichts 2024 auf der Skala 0 bis 1; die Werte und der Hinweis „EGDI“ stehen in v3 nicht mehr im Bild (EINZELNES.quellenZeilen),
+ * nur Platz und Balken (belegt in
  * docs/research/facts-context.md, Abschnitt 2: Dänemark 0,9847, Estland 0,9727, Deutschland 0,9382).
  * Beim Balken von Deutschland markiert ein kleiner Strich den Wert von 2022 (0,8770, Platz 22).
  * Die Plätze 3 bis 11 stehen nicht in der Grafik; eine gestrichelte Linie deutet die Lücke an.
@@ -97,7 +99,7 @@ export default function Rangliste() {
         <div ref={wurzel} className="karte rounded-[20px] p-6 sm:p-8">
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
                 <Label className={LABEL_GROSS}>Rangliste 2024</Label>
-                <p className="font-mono text-[0.8125rem] text-ink-2">EGDI, Skala 0 bis 1</p>
+                {EINZELNES.quellenZeilen ? <p className="font-mono text-[0.8125rem] text-ink-2">EGDI, Skala 0 bis 1</p> : null}
             </div>
 
             <ol
@@ -138,7 +140,7 @@ export default function Rangliste() {
                                     </span>
                                     <span
                                         data-wert
-                                        className="font-mono text-[13px] tabular-nums text-ink-2"
+                                        className={cn('font-mono text-[13px] tabular-nums text-ink-2', !EINZELNES.quellenZeilen && 'hidden')}
                                     >
                                         {zahl(z.wert)}
                                     </span>

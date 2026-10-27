@@ -266,36 +266,42 @@ for (const [name, seite] of [
         'Gemeinde für Gemeinde',
         'In Dänemark und Estland gehören digitale Behördengänge zum Alltag.',
         'Platz 12',
-        'UN E-Government Survey 2024',
+        'E-Government Survey 2024',
         'Ein Projekt der NX7.AGENCY.',
         'Gründer von SmartAmt',
-        'Entwickler aus Leipzig. Löst, woran andere scheitern: seit Jahren für Mittelstand und Verwaltung, mehr als 50 Digitalprojekte.',
-        'Kaufmann und NGO-Gründer aus Leipzig. IT aus Überzeugung: bringt Verwaltung und Technik an einen Tisch.',
+        'Entwickler aus Leipzig. Löst, woran andere scheitern, seit Jahren für Mittelstand und Verwaltung:',
+        'mehr als 50 Digitalprojekte.',
+        'Kaufmann und NGO-Gründer aus Leipzig. IT aus Überzeugung:',
+        'bringt Verwaltung und Technik an einen Tisch.',
         'tobiassteffen.com',
         'Kostenlose Vorschau anfragen',
     ]) {
         if (!alles.includes(text)) fehler.push(`/ueber-uns: „${text}“ fehlt`);
     }
-    // Reihenfolge (Owner 27.10.2026): Kopf → Mission → Platz 12 → fünf Versprechen → Karte → Team
+    // Reihenfolge (Owner 27.10.2026): Kopf → Mission → Platz 12 → fünf Versprechen neben der Karte → Team
     let letzte = html.indexOf('<h1');
-    for (const id of ['vision', 'lage', 'leitbild', 'deutschlandkarte', 'ueber-uns']) {
+    for (const id of ['vision', 'lage', 'leitbild', 'ueber-uns']) {
         const stelle = html.indexOf(`id="${id}"`);
-        if (stelle < 0 || stelle < letzte) fehler.push(`/ueber-uns: #${id} fehlt oder steht an der falschen Stelle (Kopf → vision → lage → leitbild → deutschlandkarte → ueber-uns)`);
+        if (stelle < 0 || stelle < letzte) fehler.push(`/ueber-uns: #${id} fehlt oder steht an der falschen Stelle (Kopf → vision → lage → leitbild → ueber-uns)`);
         else letzte = stelle;
     }
-    // Karte: 16 Bundesländer, 15 Orte mit Zeichen, Netzlinien; Platz 1 nur als Ziel
-    const karte = html.slice(html.indexOf('id="deutschlandkarte"'), html.indexOf('id="ueber-uns"'));
-    const laender = (karte.match(/data-land=/g) ?? []).length;
+    // Ein Abschnitt: Ziel und Karte links, fünf Punkte mit Häkchen rechts (Owner: „Das sollte nebeneinander sein“); Karte mit
+    // 16 Bundesländern, Orten mit Logo-Zeichen in Stufen, Netzlinien; Platz 1 nur als Ziel; die Quellenzeile ist raus.
+    const leitbild = html.slice(html.indexOf('id="leitbild"'), html.indexOf('id="ueber-uns"'));
+    if (/id="deutschlandkarte"/.test(html)) fehler.push('/ueber-uns: Karte steht noch als eigener Abschnitt (gehört neben die Versprechen)');
+    const laender = (leitbild.match(/data-land=/g) ?? []).length;
     if (laender !== 16) fehler.push(`/ueber-uns: Karte hat ${laender} Bundesländer, erwartet 16`);
-    const orte = (karte.match(/data-stadt=/g) ?? []).length;
+    const orte = (leitbild.match(/data-stadt=/g) ?? []).length;
     if (orte < 10) fehler.push(`/ueber-uns: Karte hat ${orte} Orte mit Zeichen, erwartet mindestens 10`);
-    if ((karte.match(/data-linie=/g) ?? []).length < orte - 1) fehler.push('/ueber-uns: Netzlinien fehlen');
-    if (!/href="#lz-wlan-srg"/.test(karte)) fehler.push('/ueber-uns: Karte nutzt nicht die Logo-Zeichen (#lz-…)');
-    if (/radial-gradient/.test(karte)) fehler.push('/ueber-uns: Karte mit Punkt- oder Radialhintergrund');
+    if ((leitbild.match(/data-linie=/g) ?? []).length < orte - 1) fehler.push('/ueber-uns: Netzlinien fehlen');
+    const stufen = new Set([...leitbild.matchAll(/data-stadt="true"[^>]*data-stufe="(\d)"|data-stufe="(\d)"[^>]*data-stadt/g)].map((m) => m[1] ?? m[2]));
+    if (stufen.size !== 5) fehler.push(`/ueber-uns: Orte sind in ${stufen.size} Stufen eingeteilt, erwartet 5 (eine je Versprechen)`);
+    if ((leitbild.match(/data-haken=/g) ?? []).length !== 5) fehler.push('/ueber-uns: nicht jedes der fünf Versprechen hat ein Häkchen');
+    if (!/href="#lz-wlan-srg"/.test(leitbild)) fehler.push('/ueber-uns: Karte nutzt nicht die Logo-Zeichen (#lz-…)');
+    if (/radial-gradient/.test(leitbild)) fehler.push('/ueber-uns: Karte mit Punkt- oder Radialhintergrund');
     if (!alles.includes('Deutschland auf dem Weg zu Platz 1.')) fehler.push('/ueber-uns: Zielsatz „Deutschland auf dem Weg zu Platz 1.“ fehlt');
     if (/Deutschland (?:ist|steht) (?:auf )?Platz 1|Deutschland auf Platz 1(?! *im)/.test(alles.replace('Deutschland auf dem Weg zu Platz 1.', ''))) fehler.push('/ueber-uns: Platz 1 als Tatsache statt als Ziel');
-    if (!alles.includes('Natural Earth')) fehler.push('/ueber-uns: Quelle der Karte (Natural Earth) fehlt');
-    const leitbild = html.slice(html.indexOf('id="leitbild"'), html.indexOf('id="deutschlandkarte"'));
+    if (/Karte: Natural Earth/.test(leitbild)) fehler.push('/ueber-uns: Quellenzeile unter dem Ziel steht noch da (Owner: „diese Quelle, rausnehmen“)');
     const punkte = (leitbild.match(/<li\b/g) ?? []).length;
     if (punkte !== 5) fehler.push(`/ueber-uns: Leitbild hat ${punkte} Punkte, erwartet 5`);
     for (const foto of ['tobias-steffen.webp', 'leon-poesken.webp']) if (!html.includes(foto)) fehler.push(`/ueber-uns: Foto ${foto} fehlt`);
@@ -336,6 +342,25 @@ for (const [name, seite] of [
         if (!alles.includes(text)) fehler.push(`/fragen: „${text}“ fehlt`);
     }
     if ((html.match(/<h1\b/g) ?? []).length !== 1) fehler.push('/fragen: genau eine h1 erwartet');
+}
+
+// Quellen nur als Fußnote und einmal am Seitenende, nie als Zeile mitten im Abschnitt (Owner 27.10.2026: „Diese Quellen und
+// Standdinger sollen weg. Das sieht immer so nach KI aus.“; „mit einem ganz kleinen Sternchen 1 oder so und dann unten einmal
+// aufführen am Ende der Seite“).
+for (const [name, seite] of [
+    ['/ueber-uns', ueber],
+    ['/fragen', fragen],
+]) {
+    const ende = seite.html.indexOf('aria-label="Quellen"');
+    if (ende < 0) {
+        fehler.push(`${name}: Quellenliste am Seitenende fehlt`);
+        continue;
+    }
+    const davor = seite.html.slice(0, ende);
+    for (const muster of [/Quellen:/, /Stand 31\.12\.2025/, /Stand: Oktober 2026/]) {
+        if (muster.test(davor)) fehler.push(`${name}: „${muster.source}“ steht mitten auf der Seite statt in der Quellenliste`);
+    }
+    if (!/id="quelle-1"/.test(seite.html) || !/href="#quelle-1"/.test(davor)) fehler.push(`${name}: Fußnote 1 und Quelle 1 fehlen`);
 }
 
 // Datenschutz: nennt nur Felder, die das Formular abfragt (die Schulungs-Anliegen sind ausgeblendet)
